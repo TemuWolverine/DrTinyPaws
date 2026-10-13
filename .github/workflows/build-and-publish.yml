@@ -86,9 +86,9 @@ jobs:
           mkdir -p ./output/android-package
           # Prefer signed APK if present, fallback to unsigned
           if ls ./output/android/*-Signed.apk 1> /dev/null 2>&1; then
-            cp ./output/android/*-Signed.apk ./output/android-package/NurseJoy.apk
+            cp ./output/android/*-Signed.apk ./output/android-package/DrTinyPaws.apk
           else
-            cp ./output/android/*.apk ./output/android-package/NurseJoy.apk
+            cp ./output/android/*.apk ./output/android-package/DrTinyPaws.apk
           fi
 
       - name: Upload Android artifacts
@@ -122,9 +122,9 @@ jobs:
         run: |
           mkdir -p releases
           # Package Windows zip
-          (cd win-x64 && zip -r ../releases/NurseJoy-Windows-x64.zip ./*)
+          (cd win-x64 && zip -r ../releases/DrTinyPaws-Windows-x64.zip ./*)
           # Package Android APK
-          cp android/*.apk releases/NurseJoy.apk
+          cp android/*.apk releases/DrTinyPaws.apk
 
       - name: Upload assets to published Release
         if: github.event_name == 'release'
