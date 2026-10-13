@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DrTinyPaws.Models;
@@ -31,4 +31,7 @@ public interface IDataStore
     Task<DoseGroup?> GetDoseGroupByIdAsync(string id);
     Task SaveDoseGroupAsync(DoseGroup group);
     Task DeleteDoseGroupAsync(string id);
+
+    // Import
+    Task<PillLoggerImportResult> ImportPillLoggerDatabaseAsync(string sourceDbPath, bool clearExistingData = true);
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -709,6 +709,25 @@ public class SqliteDataStore : IDataStore, IDisposable
             _lock.Release();
         }
         NotifyDataChanged();
+    }
+
+    public async Task<PillLoggerImportResult> ImportPillLoggerDatabaseAsync(string sourceDbPath, bool clearExistingData = true)
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            var importer = new PillLoggerImporter();
+            var result = await importer.ImportAsync(sourceDbPath, _databasePath, clearExistingData);
+            if (result.Success)
+            {
+                NotifyDataChanged();
+            }
+            return result;
+        }
+        finally
+        {
+            _lock.Release();
+        }
     }
 
     public void Dispose()

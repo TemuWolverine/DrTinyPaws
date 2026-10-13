@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -22,6 +24,21 @@ public partial class SettingsViewModel : ViewModelBase
 
     [Reactive]
     public partial bool IsSuccess { get; set; }
+
+    [Reactive]
+    public partial bool ClearExistingDataOnImport { get; set; } = true;
+
+    [Reactive]
+    public partial bool IsImporting { get; set; }
+
+    [Reactive]
+    public partial string ImportStatusMessage { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial bool ImportSuccess { get; set; }
+
+    public Interaction<Unit, string?> OpenPillLoggerFileDialog { get; } = new();
+    public Interaction<Unit, string?> OpenDatabaseFileDialog { get; } = new();
 
     public event Action? Saved;
     public event Action? Cancelled;
@@ -60,12 +77,70 @@ public partial class SettingsViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
+    public async Task BrowseDatabasePathAsync()
+    {
+        try
+        {
+            var selectedPath = await OpenDatabaseFileDialog.Handle(Unit.Default);
+            if (!string.IsNullOrWhiteSpace(selectedPath))
+            {
+                CustomPathInput = selectedPath;
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Failed to browse path: {ex.Message}";
+            IsSuccess = false;
+        }
+    }
+
+    [ReactiveCommand]
     public async Task ResetToDefaultPathAsync()
     {
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var defaultPath = Path.Combine(appData, "DrTinyPaws", "drtinypaws.db");
         CustomPathInput = defaultPath;
         await SavePathAsync();
+    }
+
+    [ReactiveCommand]
+    public async Task ImportPillLoggerAsync()
+    {
+        if (IsImporting) return;
+
+        try
+        {
+            var selectedPath = await OpenPillLoggerFileDialog.Handle(Unit.Default);
+            if (string.IsNullOrWhiteSpace(selectedPath))
+            {
+                return;
+            }
+
+            IsImporting = true;
+            ImportStatusMessage = "Importing data from Pill Logger...";
+            ImportSuccess = false;
+
+            var result = await _dataStore.ImportPillLoggerDatabaseAsync(selectedPath, ClearExistingDataOnImport);
+            if (result.Success)
+            {
+                ImportSuccess = true;
+                ImportStatusMessage = $"Successfully imported {result.MedicationsImported} medications, {result.IntakesImported:N0} logs, and {result.DoseGroupsImported} routine presets!";
+            }
+            else
+            {
+                ImportSuccess = false;
+                ImportStatusMessage = $"Import failed: {result.ErrorMessage}";
+            }
+        }
+        catch (Exception ex)
+        {
+            ImportSuccess = false;
+            ImportStatusMessage = $"Import failed: {ex.Message}";
+        }
+        finally
+        {
+            IsImporting = false;
+        }
     }
 
     [ReactiveCommand]

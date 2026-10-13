@@ -5,7 +5,7 @@
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:vm="using:DrTinyPaws.ViewModels"
-          d:DesignHeight="600"
+          d:DesignHeight="650"
           d:DesignWidth="680"
           x:DataType="vm:SettingsViewModel"
           mc:Ignorable="d">
@@ -31,6 +31,7 @@
 
             <TextBlock Text="DrTinyPaws stores your medication data in a local SQLite database that is fully compatible with Syncthing, Nextcloud, Google Drive, or OneDrive desktop sync clients." TextWrapping="Wrap" />
 
+            <!-- Database Path Configuration -->
             <StackPanel Spacing="4">
                 <TextBlock FontWeight="SemiBold" Text="Current Active Database File:" />
                 <Grid ColumnDefinitions="*,Auto">
@@ -42,7 +43,7 @@
                               Grid.Column="1"
                               Padding="10,6"
                               BorderThickness="1"
-                              Command="{Binding ResetToDefaultPathCommand}"
+                              Command="{Binding BrowseDatabasePathCommand}"
                               Content="Browse"
                               CornerRadius="6" />
                 </Grid>
@@ -59,6 +60,49 @@
                               Text="How multi-device sync works:" />
                     <TextBlock Text="1. Point DrTinyPaws on this computer and your other devices to a shared sync directory (e.g. your Syncthing or Nextcloud folder)." TextWrapping="Wrap" />
                     <TextBlock Text="2. DrTinyPaws monitors the database file with automatic change detection. When another device syncs updates, the UI reloads instantly!" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <!-- Import from Pill Logger -->
+            <Border
+                      Padding="14"
+                      BorderThickness="1"
+                      CornerRadius="6">
+                <StackPanel Spacing="10">
+                    <TextBlock
+                              FontSize="15"
+                              FontWeight="Bold"
+                              Text="Import from Pill Logger" />
+                    <TextBlock
+                              Text="Select a Pill Logger database file (.db) to import all pills, intake history, and routine presets into NurseJoy."
+                              TextWrapping="Wrap" />
+
+                    <CheckBox
+                              IsChecked="{Binding ClearExistingDataOnImport}"
+                              Content="Clear existing data before import (recommended for clean migration)" />
+
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Button
+                                  Grid.Column="0"
+                                  Padding="14,8"
+                                  Command="{Binding ImportPillLoggerCommand}"
+                                  Content="Import Pill Logger DB..."
+                                  CornerRadius="6"
+                                  FontWeight="Bold"
+                                  IsEnabled="{Binding !IsImporting}" />
+                        <ProgressBar
+                                  Grid.Column="1"
+                                  Margin="16,0,0,0"
+                                  IsIndeterminate="True"
+                                  IsVisible="{Binding IsImporting}"
+                                  VerticalAlignment="Center" />
+                    </Grid>
+
+                    <TextBlock
+                              FontWeight="SemiBold"
+                              IsVisible="{Binding ImportStatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                              Text="{Binding ImportStatusMessage}"
+                              TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 

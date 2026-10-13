@@ -390,4 +390,196 @@ public class DrTinyPawsTests
             }
         }
     }
+
+    [Fact]
+    public async Task PillLoggerImporter_WithSamplePillLoggerDb_ImportsSuccessfully()
+    {
+        var samplePillLoggerDb = Path.Combine(Path.GetTempPath(), $"sample_pilllogger_{Guid.NewGuid():N}.db");
+        var targetDb = Path.Combine(Path.GetTempPath(), $"drtinypaws_target_{Guid.NewGuid():N}.db");
+
+        try
+        {
+            await CreateMockPillLoggerDbAsync(samplePillLoggerDb);
+
+            var importer = new PillLoggerImporter();
+            var result = await importer.ImportAsync(samplePillLoggerDb, targetDb, clearExistingData: true);
+
+            Assert.True(result.Success);
+            Assert.Equal(2, result.MedicationsImported);
+            Assert.Equal(24, result.IntakesImported);
+            Assert.Equal(1, result.DoseGroupsImported);
+
+            // Verify content in target datastore
+            using var store = new SqliteDataStore();
+            await store.SetDatabasePathAsync(targetDb, seedSampleData: false);
+
+            var meds = await store.GetMedicationsAsync(includeInactive: true);
+            Assert.Equal(2, meds.Count);
+            var med1 = meds.First(m => m.Name == "Paracetamol");
+            Assert.Equal("500mg", med1.Dosage);
+            Assert.Equal("Every 4h", med1.ReminderTime);
+
+            var groups = await store.GetDoseGroupsAsync();
+            Assert.Single(groups);
+            Assert.Equal("Primary Routine", groups[0].Name);
+            Assert.Equal(2, groups[0].Items.Count);
+
+            var intakes = await store.GetRecentIntakesAsync(limit: 50);
+            Assert.Equal(24, intakes.Count);
+        }
+        finally
+        {
+            if (File.Exists(samplePillLoggerDb)) try { File.Delete(samplePillLoggerDb); } catch { }
+            if (File.Exists(targetDb)) try { File.Delete(targetDb); } catch { }
+        }
+    }
+
+    [Fact]
+    public async Task PillLoggerImporter_WithInvalidDb_FailsGracefully()
+    {
+        var invalidDb = Path.Combine(Path.GetTempPath(), $"invalid_db_{Guid.NewGuid():N}.db");
+        var targetDb = Path.Combine(Path.GetTempPath(), $"drtinypaws_target_{Guid.NewGuid():N}.db");
+
+        try
+        {
+            using (var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={invalidDb}"))
+            {
+                await conn.OpenAsync();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "CREATE TABLE some_random_table (id INTEGER);";
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            var importer = new PillLoggerImporter();
+            var result = await importer.ImportAsync(invalidDb, targetDb);
+
+            Assert.False(result.Success);
+            Assert.NotNull(result.ErrorMessage);
+            Assert.Contains("missing 'pills' or 'consumptions'", result.ErrorMessage);
+        }
+        finally
+        {
+            if (File.Exists(invalidDb)) try { File.Delete(invalidDb); } catch { }
+            if (File.Exists(targetDb)) try { File.Delete(targetDb); } catch { }
+        }
+    }
+
+    [Fact]
+    public async Task SettingsViewModel_ImportCommand_UserCancels_DoesNotChangeState()
+    {
+        var targetDb = Path.Combine(Path.GetTempPath(), $"drtinypaws_target_{Guid.NewGuid():N}.db");
+        using var store = new SqliteDataStore();
+
+        try
+        {
+            await store.SetDatabasePathAsync(targetDb, seedSampleData: false);
+            var vm = new SettingsViewModel(store);
+
+            // Register interaction handler returning null (dialog cancelled)
+            using var d = vm.OpenPillLoggerFileDialog.RegisterHandler(interaction =>
+            {
+                interaction.SetOutput(null);
+            });
+
+            await vm.ImportPillLoggerCommand.Execute().ToTask();
+
+            Assert.False(vm.IsImporting);
+            Assert.False(vm.ImportSuccess);
+            Assert.Empty(vm.ImportStatusMessage);
+        }
+        finally
+        {
+            if (File.Exists(targetDb)) try { File.Delete(targetDb); } catch { }
+        }
+    }
+
+    [Fact]
+    public async Task SettingsViewModel_ImportCommand_SucceedsWithMockDb()
+    {
+        var samplePillLoggerDb = Path.Combine(Path.GetTempPath(), $"sample_pilllogger_{Guid.NewGuid():N}.db");
+        var targetDb = Path.Combine(Path.GetTempPath(), $"drtinypaws_target_{Guid.NewGuid():N}.db");
+        using var store = new SqliteDataStore();
+
+        try
+        {
+            await CreateMockPillLoggerDbAsync(samplePillLoggerDb);
+            await store.SetDatabasePathAsync(targetDb, seedSampleData: false);
+
+            var vm = new SettingsViewModel(store);
+
+            // Register interaction handler returning the mock db path
+            using var d = vm.OpenPillLoggerFileDialog.RegisterHandler(interaction =>
+            {
+                interaction.SetOutput(samplePillLoggerDb);
+            });
+
+            await vm.ImportPillLoggerCommand.Execute().ToTask();
+
+            Assert.False(vm.IsImporting);
+            Assert.True(vm.ImportSuccess);
+            Assert.Contains("Successfully imported 2 medications", vm.ImportStatusMessage);
+        }
+        finally
+        {
+            if (File.Exists(samplePillLoggerDb)) try { File.Delete(samplePillLoggerDb); } catch { }
+            if (File.Exists(targetDb)) try { File.Delete(targetDb); } catch { }
+        }
+    }
+
+    [Fact]
+    public async Task PillLoggerImporter_WithActualPillLoggerDb_IfPresent_ImportsAllRecords()
+    {
+        const string actualDb = @"d:\Utils\scrcpy-win64-v1.24\pilllogger\apps\uk.co.pilllogger\db\PillLogger.db";
+        if (!File.Exists(actualDb)) return;
+
+        var targetDb = Path.Combine(Path.GetTempPath(), $"drtinypaws_actual_import_{Guid.NewGuid():N}.db");
+        using var store = new SqliteDataStore();
+
+        try
+        {
+            await store.SetDatabasePathAsync(targetDb, seedSampleData: false);
+            var result = await store.ImportPillLoggerDatabaseAsync(actualDb, clearExistingData: true);
+
+            Assert.True(result.Success);
+            Assert.Equal(19, result.MedicationsImported);
+            Assert.Equal(10861, result.IntakesImported);
+            Assert.Equal(4, result.DoseGroupsImported);
+        }
+        finally
+        {
+            if (File.Exists(targetDb)) try { File.Delete(targetDb); } catch { }
+        }
+    }
+
+    private static async Task CreateMockPillLoggerDbAsync(string dbPath)
+    {
+        using var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}");
+        await conn.OpenAsync();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            CREATE TABLE units (_id INTEGER PRIMARY KEY, name TEXT);
+            INSERT INTO units (_id, name) VALUES (1, 'mg'), (2, 'ml');
+
+            CREATE TABLE pills (_id INTEGER PRIMARY KEY, name TEXT, size INTEGER, colour INTEGER, favourite INTEGER, units_id INTEGER, default_reminder INTEGER, user_id INTEGER DEFAULT 1);
+            INSERT INTO pills (_id, name, size, colour, favourite, units_id, default_reminder)
+            VALUES (1, 'Paracetamol', 500, 1694485504, 0, 1, 4),
+                   (2, 'Ibuprofen', 200, 0, 0, 1, 0);
+
+            CREATE TABLE consumptions (_id INTEGER PRIMARY KEY, pill_id INTEGER, date_time LONG, quantity INTEGER, group_id TEXT, reminder_date_time LONG, user_id INTEGER DEFAULT 1);
+        ";
+        await cmd.ExecuteNonQueryAsync();
+
+        for (int i = 0; i < 12; i++)
+        {
+            var gid = Guid.NewGuid().ToString();
+            var ts = DateTimeOffset.UtcNow.AddHours(-i).ToUnixTimeMilliseconds();
+            using var insertCmd = conn.CreateCommand();
+            insertCmd.CommandText = $@"
+                INSERT INTO consumptions (pill_id, date_time, quantity, group_id) VALUES (1, {ts}, 2, '{gid}');
+                INSERT INTO consumptions (pill_id, date_time, quantity, group_id) VALUES (2, {ts}, 1, '{gid}');
+            ";
+            await insertCmd.ExecuteNonQueryAsync();
+        }
+    }
 }
+
