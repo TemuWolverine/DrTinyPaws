@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -13,32 +13,32 @@ namespace DrTinyPaws.ViewModels;
 
 public partial class WeeklyChartViewModel : ViewModelBase
 {
-    [ObservableProperty]
-    private DateTime _weekStartDate;
+    [Reactive]
+    public partial DateTime WeekStartDate { get; set; }
 
-    [ObservableProperty]
-    private string _weekLabel = string.Empty;
+    [Reactive]
+    public partial string WeekLabel { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private ISeries[] _series = [];
+    [Reactive]
+    public partial ISeries[] Series { get; set; } = [];
 
-    [ObservableProperty]
-    private Axis[] _xAxes = [];
+    [Reactive]
+    public partial Axis[] XAxes { get; set; } = [];
 
-    [ObservableProperty]
-    private Axis[] _yAxes = [];
+    [Reactive]
+    public partial Axis[] YAxes { get; set; } = [];
 
-    [ObservableProperty]
-    private int _totalWeeklyDoses;
+    [Reactive]
+    public partial int TotalWeeklyDoses { get; set; }
 
     public event Action? WeekChanged;
 
-    public WeeklyChartViewModel()
+    public WeeklyChartViewModel(IScreen? hostScreen = null) : base(hostScreen)
     {
         // Start on Monday of current week
         var now = DateTime.Now;
         int diff = (7 + (int)now.DayOfWeek - (int)DayOfWeek.Monday) % 7;
-        _weekStartDate = now.Date.AddDays(-diff);
+        WeekStartDate = now.Date.AddDays(-diff);
         UpdateWeekLabel();
         SetupAxes();
     }
@@ -78,7 +78,7 @@ public partial class WeeklyChartViewModel : ViewModelBase
         WeekLabel = $"{WeekStartDate:dd MMM} – {weekEnd:dd MMM yyyy}";
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void PreviousWeek()
     {
         WeekStartDate = WeekStartDate.AddDays(-7);
@@ -87,7 +87,7 @@ public partial class WeeklyChartViewModel : ViewModelBase
         WeekChanged?.Invoke();
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void NextWeek()
     {
         WeekStartDate = WeekStartDate.AddDays(7);
@@ -96,7 +96,7 @@ public partial class WeeklyChartViewModel : ViewModelBase
         WeekChanged?.Invoke();
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void CurrentWeek()
     {
         var now = DateTime.Now;

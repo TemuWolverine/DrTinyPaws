@@ -11,13 +11,14 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.ReactiveUI" />
+    <PackageReference Include="ReactiveUI.SourceGenerators" PrivateAssets="all" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="LiveChartsCore" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
     <PackageReference Include="Microsoft.Data.Sqlite" />

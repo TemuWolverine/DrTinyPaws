@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using DrTinyPaws.Models;
 using DrTinyPaws.Services;
 
@@ -13,32 +13,34 @@ public partial class MedicationEditViewModel : ViewModelBase
     private readonly IDataStore _dataStore;
     private readonly INotificationService _notificationService;
 
-    [ObservableProperty]
-    private string _id = string.Empty;
+    [Reactive]
+    public partial string Id { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _name = string.Empty;
+    [Reactive]
+    public partial string Name { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _dosage = string.Empty;
+    [Reactive]
+    public partial string Dosage { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _colorHex = string.Empty;
+    [Reactive]
+    public partial string ColorHex { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _schedule = string.Empty;
+    [Reactive]
+    public partial string Schedule { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _reminderTime = string.Empty;
+    [Reactive]
+    public partial string ReminderTime { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _notes = string.Empty;
+    [Reactive]
+    public partial string Notes { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _errorMessage = string.Empty;
+    [Reactive]
+    public partial string ErrorMessage { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private bool _isEditing;
+    [Reactive]
+    public partial bool IsEditing { get; set; }
+
+    public string Title => IsEditing ? "Edit Medication" : "Add Medication";
 
     public List<string> AvailableColors { get; } =
     [
@@ -70,31 +72,35 @@ public partial class MedicationEditViewModel : ViewModelBase
     public event Action? Saved;
     public event Action? Cancelled;
 
-    public MedicationEditViewModel(IDataStore dataStore, INotificationService notificationService, Medication? existing = null)
+    public MedicationEditViewModel(
+        IDataStore dataStore,
+        INotificationService notificationService,
+        Medication? existing = null,
+        IScreen? hostScreen = null) : base(hostScreen)
     {
         _dataStore = dataStore;
         _notificationService = notificationService;
 
         if (existing != null)
         {
-            _isEditing = true;
-            _id = existing.Id;
-            _name = existing.Name;
-            _dosage = existing.Dosage ?? string.Empty;
-            _colorHex = existing.ColorHex;
-            _schedule = existing.Schedule ?? string.Empty;
-            _reminderTime = existing.ReminderTime ?? string.Empty;
-            _notes = existing.Notes ?? string.Empty;
+            IsEditing = true;
+            Id = existing.Id;
+            Name = existing.Name;
+            Dosage = existing.Dosage ?? string.Empty;
+            ColorHex = existing.ColorHex;
+            Schedule = existing.Schedule ?? string.Empty;
+            ReminderTime = existing.ReminderTime ?? string.Empty;
+            Notes = existing.Notes ?? string.Empty;
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void SelectColor(string color)
     {
         ColorHex = color;
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task SaveAsync()
     {
         if (string.IsNullOrWhiteSpace(Name))
@@ -135,11 +141,13 @@ public partial class MedicationEditViewModel : ViewModelBase
         }
 
         Saved?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void Cancel()
     {
         Cancelled?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 }

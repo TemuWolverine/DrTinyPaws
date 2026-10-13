@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using DrTinyPaws.Models;
 using DrTinyPaws.Services;
 
@@ -18,9 +18,17 @@ public partial class MedicationManagementViewModel : ViewModelBase
     public event Action<Medication>? EditMedicationRequested;
     public event Action? Closed;
 
-    public MedicationManagementViewModel(IDataStore dataStore)
+    public MedicationManagementViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
     {
         _dataStore = dataStore;
+
+        _dataStore.DataChanged += (s, e) =>
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                _ = LoadMedicationsAsync();
+            });
+        };
     }
 
     public async Task InitializeAsync()
@@ -38,28 +46,37 @@ public partial class MedicationManagementViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void RequestAddMedication()
     {
         AddMedicationRequested?.Invoke();
+        if (HostScreen != null)
+        {
+            HostScreen.Router.Navigate.Execute(new MedicationEditViewModel(_dataStore, ServiceLocator.NotificationService, null, HostScreen)).Subscribe();
+        }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void RequestEditMedication(Medication medication)
     {
         EditMedicationRequested?.Invoke(medication);
+        if (HostScreen != null)
+        {
+            HostScreen.Router.Navigate.Execute(new MedicationEditViewModel(_dataStore, ServiceLocator.NotificationService, medication, HostScreen)).Subscribe();
+        }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task DeleteMedicationAsync(Medication medication)
     {
         await _dataStore.DeleteMedicationAsync(medication.Id);
         await LoadMedicationsAsync();
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void Close()
     {
         Closed?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 }

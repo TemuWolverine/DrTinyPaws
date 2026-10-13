@@ -1,8 +1,9 @@
-﻿using Avalonia.Controls;
+using Avalonia.ReactiveUI;
+using DrTinyPaws.ViewModels;
 
 namespace DrTinyPaws.Views;
 
-public partial class TakeMedicationView : UserControl
+public partial class TakeMedicationView : ReactiveUserControl<TakeMedicationViewModel>
 {
     public TakeMedicationView()
     {

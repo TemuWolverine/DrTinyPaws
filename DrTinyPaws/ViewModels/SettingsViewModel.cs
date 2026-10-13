@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using DrTinyPaws.Services;
 
 namespace DrTinyPaws.ViewModels;
@@ -11,29 +11,29 @@ public partial class SettingsViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
 
-    [ObservableProperty]
-    private string _currentDatabasePath = string.Empty;
+    [Reactive]
+    public partial string CurrentDatabasePath { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _customPathInput = string.Empty;
+    [Reactive]
+    public partial string CustomPathInput { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _statusMessage = string.Empty;
+    [Reactive]
+    public partial string StatusMessage { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private bool _isSuccess;
+    [Reactive]
+    public partial bool IsSuccess { get; set; }
 
     public event Action? Saved;
     public event Action? Cancelled;
 
-    public SettingsViewModel(IDataStore dataStore)
+    public SettingsViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
     {
         _dataStore = dataStore;
-        _currentDatabasePath = dataStore.DatabasePath;
-        _customPathInput = dataStore.DatabasePath;
+        CurrentDatabasePath = dataStore.DatabasePath;
+        CustomPathInput = dataStore.DatabasePath;
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task SavePathAsync()
     {
         if (string.IsNullOrWhiteSpace(CustomPathInput))
@@ -59,7 +59,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task ResetToDefaultPathAsync()
     {
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -68,9 +68,10 @@ public partial class SettingsViewModel : ViewModelBase
         await SavePathAsync();
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void Cancel()
     {
         Cancelled?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 }

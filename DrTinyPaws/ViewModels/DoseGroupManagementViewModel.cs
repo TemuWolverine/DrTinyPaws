@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using DrTinyPaws.Models;
 using DrTinyPaws.Services;
 
@@ -13,23 +13,23 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
 
-    [ObservableProperty]
-    private string _groupId = string.Empty;
+    [Reactive]
+    public partial string GroupId { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _groupName = string.Empty;
+    [Reactive]
+    public partial string GroupName { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _groupDescription = string.Empty;
+    [Reactive]
+    public partial string GroupDescription { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _groupColorHex = string.Empty;
+    [Reactive]
+    public partial string GroupColorHex { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private bool _isEditing;
+    [Reactive]
+    public partial bool IsEditing { get; set; }
 
-    [ObservableProperty]
-    private string _errorMessage = string.Empty;
+    [Reactive]
+    public partial string ErrorMessage { get; set; } = string.Empty;
 
     public ObservableCollection<DoseGroup> Groups { get; } = [];
     public ObservableCollection<DoseGroupItemEdit> MedicationSelection { get; } = [];
@@ -37,7 +37,7 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
     public event Action? Saved;
     public event Action? Cancelled;
 
-    public DoseGroupManagementViewModel(IDataStore dataStore)
+    public DoseGroupManagementViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
     {
         _dataStore = dataStore;
     }
@@ -57,7 +57,7 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task StartNewGroupAsync()
     {
         GroupId = Guid.NewGuid().ToString();
@@ -70,7 +70,7 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
         await LoadMedicationsForEditAsync(null);
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task EditGroupAsync(DoseGroup group)
     {
         GroupId = group.Id;
@@ -99,7 +99,7 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task SaveGroupAsync()
     {
         if (string.IsNullOrWhiteSpace(GroupName))
@@ -135,14 +135,14 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
         Saved?.Invoke();
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task DeleteGroupAsync(DoseGroup group)
     {
         await _dataStore.DeleteDoseGroupAsync(group.Id);
         await LoadGroupsAsync();
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void CancelEdit()
     {
         if (IsEditing)
@@ -152,12 +152,14 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
         else
         {
             Cancelled?.Invoke();
+            HostScreen?.Router.NavigateBack.Execute().Subscribe();
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void Close()
     {
         Cancelled?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 }

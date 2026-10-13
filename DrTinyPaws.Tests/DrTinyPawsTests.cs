@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +7,8 @@ using LiveChartsCore.SkiaSharpView;
 using DrTinyPaws.Models;
 using DrTinyPaws.Services;
 using DrTinyPaws.ViewModels;
+using ReactiveUI;
+using System.Reactive.Threading.Tasks;
 using Xunit;
 
 namespace DrTinyPaws.Tests;
@@ -311,9 +313,9 @@ public class DrTinyPawsTests
     }
 
     [Fact]
-    public async Task MainViewModel_PopupContent_ManagesStateAndCommandsCorrectly()
+    public async Task MainViewModel_Router_ManagesNavigationStackCorrectly()
     {
-        var tempDbPath = Path.Combine(Path.GetTempPath(), $"drtinypaws_popup_test_{Guid.NewGuid()}.db");
+        var tempDbPath = Path.Combine(Path.GetTempPath(), $"drtinypaws_nav_test_{Guid.NewGuid()}.db");
         var store = new SqliteDataStore();
 
         try
@@ -322,50 +324,62 @@ public class DrTinyPawsTests
             var notif = new DefaultNotificationService();
             var mainVm = new MainViewModel(store, notif);
 
-            Assert.Null(mainVm.PopupContent);
-            Assert.False(mainVm.IsPopupOpen);
+            // Initially, Router should have DashboardViewModel at the root
+            Assert.Single(mainVm.Router.NavigationStack);
+            Assert.IsType<DashboardViewModel>(mainVm.Router.NavigationStack[0]);
 
-            // 1. Open Take Medication
-            await mainVm.OpenTakeMedicationAsync();
-            Assert.NotNull(mainVm.PopupContent);
-            Assert.IsType<TakeMedicationViewModel>(mainVm.PopupContent);
-            Assert.True(mainVm.IsPopupOpen);
+            // 1. Navigate to Take Medication via Dashboard command
+            await mainVm.Dashboard.OpenTakeMedicationCommand.Execute().ToTask();
+            Assert.Equal(2, mainVm.Router.NavigationStack.Count);
+            Assert.IsType<TakeMedicationViewModel>(mainVm.Router.NavigationStack[1]);
 
-            // Light dismiss emulation
-            mainVm.IsPopupOpen = false;
-            Assert.Null(mainVm.PopupContent);
+            // Cancel / Go back
+            var takeVm = (TakeMedicationViewModel)mainVm.Router.NavigationStack[1];
+            takeVm.CancelCommand.Execute().Subscribe();
+            Assert.Single(mainVm.Router.NavigationStack);
+            Assert.IsType<DashboardViewModel>(mainVm.Router.NavigationStack[0]);
 
-            // 2. Open Add Medication
-            mainVm.OpenAddMedication();
-            Assert.NotNull(mainVm.PopupContent);
-            Assert.IsType<MedicationEditViewModel>(mainVm.PopupContent);
-            Assert.True(mainVm.IsPopupOpen);
+            // 2. Navigate to Manage Medications
+            await mainVm.Dashboard.OpenManageMedicationsCommand.Execute().ToTask();
+            Assert.Equal(2, mainVm.Router.NavigationStack.Count);
+            Assert.IsType<MedicationManagementViewModel>(mainVm.Router.NavigationStack[1]);
 
-            mainVm.ClosePopup();
-            Assert.Null(mainVm.PopupContent);
-            Assert.False(mainVm.IsPopupOpen);
+            // From Manage Medications, request Add Medication
+            var manageMedsVm = (MedicationManagementViewModel)mainVm.Router.NavigationStack[1];
+            manageMedsVm.RequestAddMedicationCommand.Execute().Subscribe();
+            Assert.Equal(3, mainVm.Router.NavigationStack.Count);
+            Assert.IsType<MedicationEditViewModel>(mainVm.Router.NavigationStack[2]);
 
-            // 3. Open Manage Medications
-            await mainVm.OpenManageMedicationsAsync();
-            Assert.NotNull(mainVm.PopupContent);
-            Assert.IsType<MedicationManagementViewModel>(mainVm.PopupContent);
-            Assert.True(mainVm.IsPopupOpen);
+            // Cancel Add Medication returns to Manage Medications
+            var addMedVm = (MedicationEditViewModel)mainVm.Router.NavigationStack[2];
+            addMedVm.CancelCommand.Execute().Subscribe();
+            Assert.Equal(2, mainVm.Router.NavigationStack.Count);
+            Assert.IsType<MedicationManagementViewModel>(mainVm.Router.NavigationStack[1]);
 
-            // 4. Open Settings
-            mainVm.OpenSettings();
-            Assert.NotNull(mainVm.PopupContent);
-            Assert.IsType<SettingsViewModel>(mainVm.PopupContent);
-            Assert.True(mainVm.IsPopupOpen);
+            // Close Manage Medications returns to Dashboard
+            manageMedsVm.CloseCommand.Execute().Subscribe();
+            Assert.Single(mainVm.Router.NavigationStack);
+            Assert.IsType<DashboardViewModel>(mainVm.Router.NavigationStack[0]);
 
-            // 5. Open Manage Groups
-            await mainVm.OpenManageGroupsAsync();
-            Assert.NotNull(mainVm.PopupContent);
-            Assert.IsType<DoseGroupManagementViewModel>(mainVm.PopupContent);
-            Assert.True(mainVm.IsPopupOpen);
+            // 3. Navigate to Settings
+            mainVm.Dashboard.OpenSettingsCommand.Execute().Subscribe();
+            Assert.Equal(2, mainVm.Router.NavigationStack.Count);
+            Assert.IsType<SettingsViewModel>(mainVm.Router.NavigationStack[1]);
 
-            mainVm.ClosePopup();
-            Assert.Null(mainVm.PopupContent);
-            Assert.False(mainVm.IsPopupOpen);
+            var settingsVm = (SettingsViewModel)mainVm.Router.NavigationStack[1];
+            settingsVm.CancelCommand.Execute().Subscribe();
+            Assert.Single(mainVm.Router.NavigationStack);
+            Assert.IsType<DashboardViewModel>(mainVm.Router.NavigationStack[0]);
+
+            // 4. Navigate to Manage Groups
+            await mainVm.Dashboard.OpenManageGroupsCommand.Execute().ToTask();
+            Assert.Equal(2, mainVm.Router.NavigationStack.Count);
+            Assert.IsType<DoseGroupManagementViewModel>(mainVm.Router.NavigationStack[1]);
+
+            var groupsVm = (DoseGroupManagementViewModel)mainVm.Router.NavigationStack[1];
+            groupsVm.CloseCommand.Execute().Subscribe();
+            Assert.Single(mainVm.Router.NavigationStack);
+            Assert.IsType<DashboardViewModel>(mainVm.Router.NavigationStack[0]);
         }
         finally
         {

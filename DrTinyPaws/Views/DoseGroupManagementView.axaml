@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
           x:Class="DrTinyPaws.Views.DoseGroupManagementView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,210 +7,214 @@
           xmlns:models="using:DrTinyPaws.Models"
           xmlns:vm="using:DrTinyPaws.ViewModels"
           d:DesignHeight="600"
-          d:DesignWidth="560"
+          d:DesignWidth="680"
           x:DataType="vm:DoseGroupManagementViewModel"
           mc:Ignorable="d">
 
-    <Border
-              Width="560"
-              MaxHeight="600"
-              Padding="24"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Center"
-              BorderThickness="1"
-              CornerRadius="12">
-        <Grid RowDefinitions="Auto,*,Auto">
-            <Grid
-                      Grid.Row="0"
-                      Margin="0,0,0,12"
-                      ColumnDefinitions="*,Auto">
-                <TextBlock
-                          FontSize="18"
-                          FontWeight="Bold"
-                          Text="Group Dose Presets" />
-                <Button
-                          Grid.Column="1"
-                          BorderThickness="0"
-                          Command="{Binding CloseCommand}"
-                          Content="✕" />
-            </Grid>
+    <ScrollViewer>
+        <Border
+                  MaxWidth="680"
+                  Margin="16,12"
+                  Padding="24"
+                  HorizontalAlignment="Center"
+                  BorderThickness="1"
+                  CornerRadius="12">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <Grid
+                          Grid.Row="0"
+                          Margin="0,0,0,14"
+                          ColumnDefinitions="Auto,*,Auto">
+                    <Button Grid.Column="0" Command="{Binding CloseCommand}" Content="← Back" Margin="0,0,12,0" Padding="10,6" CornerRadius="6"/>
+                    <TextBlock
+                              Grid.Column="1"
+                              VerticalAlignment="Center"
+                              FontSize="18"
+                              FontWeight="Bold"
+                              Text="Group Dose Presets" />
+                    <Button
+                              Grid.Column="2"
+                              BorderThickness="0"
+                              Command="{Binding CloseCommand}"
+                              Content="✕" />
+                </Grid>
 
-            <!--  List view of groups or editor  -->
-            <Grid Grid.Row="1">
-                <!--  List Mode  -->
-                <ScrollViewer MaxHeight="380" IsVisible="{Binding !IsEditing}">
-                    <ItemsControl ItemsSource="{Binding Groups}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="models:DoseGroup">
-                                <Border
-                                          Margin="0,0,0,8"
-                                          Padding="12,10"
-                                          BorderThickness="1"
-                                          CornerRadius="8">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                            <TextBlock
-                                                      FontSize="14"
-                                                      FontWeight="Bold"
-                                                      Text="{Binding Name}" />
-                                            <TextBlock
-                                                      FontSize="12"
-                                                      IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                      Text="{Binding Description}" />
-                                            <!--  Items summary  -->
-                                            <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding Items}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel Orientation="Horizontal" />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate x:DataType="models:DoseGroupItem">
-                                                        <Border
-                                                                  Margin="0,0,4,4"
-                                                                  Padding="6,2"
-                                                                  CornerRadius="4">
-                                                            <TextBlock FontSize="11">
-                                                                <Run FontWeight="Bold" Text="{Binding Quantity}" />
-                                                                <Run Text="× " />
-                                                                <Run Text="{Binding MedicationName}" />
-                                                            </TextBlock>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-                                        <StackPanel
-                                                  Grid.Column="1"
-                                                  VerticalAlignment="Center"
-                                                  Orientation="Horizontal"
-                                                  Spacing="6">
-                                            <Button
-                                                      Padding="8,4"
-                                                      Command="{Binding $parent[UserControl].((vm:DoseGroupManagementViewModel)DataContext).EditGroupCommand}"
-                                                      CommandParameter="{Binding}"
-                                                      Content="Edit"
-                                                      CornerRadius="4" />
-                                            <Button
-                                                      Padding="8,4"
-                                                      Command="{Binding $parent[UserControl].((vm:DoseGroupManagementViewModel)DataContext).DeleteGroupCommand}"
-                                                      CommandParameter="{Binding}"
-                                                      Content="Delete"
-                                                      CornerRadius="4" />
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-
-                <!--  Edit/Create Mode  -->
-                <ScrollViewer MaxHeight="380" IsVisible="{Binding IsEditing}">
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                                  FontSize="12"
-                                  FontWeight="SemiBold"
-                                  Text="Preset Name *" />
-                        <TextBox PlaceholderText="e.g. Morning Routine, Bedtime Dose" Text="{Binding GroupName}" />
-
-                        <TextBlock
-                                  FontSize="12"
-                                  FontWeight="SemiBold"
-                                  Text="Description (optional)" />
-                        <TextBox PlaceholderText="Brief reminder description" Text="{Binding GroupDescription}" />
-
-                        <TextBlock
-                                  Margin="0,6,0,0"
-                                  FontSize="12"
-                                  FontWeight="SemiBold"
-                                  Text="Select Medications &amp; Quantities:" />
-                        <ItemsControl ItemsSource="{Binding MedicationSelection}">
+                <!--  List view of groups or editor  -->
+                <Grid Grid.Row="1">
+                    <!--  List Mode  -->
+                    <ScrollViewer MaxHeight="450" IsVisible="{Binding !IsEditing}">
+                        <ItemsControl ItemsSource="{Binding Groups}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:DoseGroupItemEdit">
+                                <DataTemplate x:DataType="models:DoseGroup">
                                     <Border
-                                              Margin="0,0,0,4"
-                                              Padding="8,4"
-                                              CornerRadius="4">
-                                        <Grid ColumnDefinitions="Auto,*,Auto">
-                                            <CheckBox
-                                                      Grid.Column="0"
-                                                      Margin="0,0,8,0"
-                                                      IsChecked="{Binding IsIncluded}" />
-                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                              Margin="0,0,0,8"
+                                              Padding="12,10"
+                                              BorderThickness="1"
+                                              CornerRadius="8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                                 <TextBlock
-                                                          FontSize="13"
-                                                          FontWeight="SemiBold"
-                                                          Text="{Binding Medication.Name}" />
-                                                <TextBlock FontSize="11" Text="{Binding Medication.Dosage}" />
+                                                          FontSize="14"
+                                                          FontWeight="Bold"
+                                                          Text="{Binding Name}" />
+                                                <TextBlock
+                                                          FontSize="12"
+                                                          IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                          Text="{Binding Description}" />
+                                                <!--  Items summary  -->
+                                                <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding Items}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel Orientation="Horizontal" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:DoseGroupItem">
+                                                            <Border
+                                                                      Margin="0,0,4,4"
+                                                                      Padding="6,2"
+                                                                      CornerRadius="4">
+                                                                <TextBlock FontSize="11">
+                                                                    <Run FontWeight="Bold" Text="{Binding Quantity}" />
+                                                                    <Run Text="× " />
+                                                                    <Run Text="{Binding MedicationName}" />
+                                                                </TextBlock>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
                                             </StackPanel>
                                             <StackPanel
-                                                      Grid.Column="2"
+                                                      Grid.Column="1"
+                                                      VerticalAlignment="Center"
                                                       Orientation="Horizontal"
-                                                      Spacing="4">
-                                                <TextBlock
-                                                          VerticalAlignment="Center"
-                                                          FontSize="12"
-                                                          Text="Qty:" />
-                                                <NumericUpDown
-                                                          Width="90"
-                                                          Maximum="50"
-                                                          Minimum="1"
-                                                          Value="{Binding Quantity}" />
+                                                      Spacing="6">
+                                                <Button
+                                                          Padding="8,4"
+                                                          Command="{Binding $parent[UserControl].((vm:DoseGroupManagementViewModel)DataContext).EditGroupCommand}"
+                                                          CommandParameter="{Binding}"
+                                                          Content="Edit"
+                                                          CornerRadius="4" />
+                                                <Button
+                                                          Padding="8,4"
+                                                          Command="{Binding $parent[UserControl].((vm:DoseGroupManagementViewModel)DataContext).DeleteGroupCommand}"
+                                                          CommandParameter="{Binding}"
+                                                          Content="Delete"
+                                                          CornerRadius="4" />
                                             </StackPanel>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+                    </ScrollViewer>
 
-                        <TextBlock
-                                  FontSize="12"
-                                  IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                  Text="{Binding ErrorMessage}" />
-                    </StackPanel>
-                </ScrollViewer>
+                    <!--  Edit/Create Mode  -->
+                    <ScrollViewer MaxHeight="450" IsVisible="{Binding IsEditing}">
+                        <StackPanel Spacing="10">
+                            <TextBlock
+                                      FontSize="12"
+                                      FontWeight="SemiBold"
+                                      Text="Preset Name *" />
+                            <TextBox PlaceholderText="e.g. Morning Routine, Bedtime Dose" Text="{Binding GroupName}" />
+
+                            <TextBlock
+                                      FontSize="12"
+                                      FontWeight="SemiBold"
+                                      Text="Description (optional)" />
+                            <TextBox PlaceholderText="Brief reminder description" Text="{Binding GroupDescription}" />
+
+                            <TextBlock
+                                      Margin="0,6,0,0"
+                                      FontSize="12"
+                                      FontWeight="SemiBold"
+                                      Text="Select Medications &amp; Quantities:" />
+                            <ItemsControl ItemsSource="{Binding MedicationSelection}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:DoseGroupItemEdit">
+                                        <Border
+                                                  Margin="0,0,0,4"
+                                                  Padding="8,4"
+                                                  CornerRadius="4">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <CheckBox
+                                                          Grid.Column="0"
+                                                          Margin="0,0,8,0"
+                                                          IsChecked="{Binding IsIncluded}" />
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock
+                                                              FontSize="13"
+                                                              FontWeight="SemiBold"
+                                                              Text="{Binding Medication.Name}" />
+                                                    <TextBlock FontSize="11" Text="{Binding Medication.Dosage}" />
+                                                </StackPanel>
+                                                <StackPanel
+                                                          Grid.Column="2"
+                                                          Orientation="Horizontal"
+                                                          Spacing="4">
+                                                    <TextBlock
+                                                              VerticalAlignment="Center"
+                                                              FontSize="12"
+                                                              Text="Qty:" />
+                                                    <NumericUpDown
+                                                              Width="90"
+                                                              Maximum="50"
+                                                              Minimum="1"
+                                                              Value="{Binding Quantity}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock
+                                      FontSize="12"
+                                      IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                      Text="{Binding ErrorMessage}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+
+                <!--  Footer  -->
+                <Grid
+                          Grid.Row="2"
+                          Margin="0,16,0,0"
+                          ColumnDefinitions="*,Auto,Auto">
+                    <Button
+                              Grid.Column="0"
+                              Padding="14,8"
+                              Command="{Binding StartNewGroupCommand}"
+                              Content="+ New Preset Group"
+                              CornerRadius="6"
+                              FontWeight="SemiBold"
+                              IsVisible="{Binding !IsEditing}" />
+
+                    <Button
+                              Grid.Column="1"
+                              Margin="0,0,8,0"
+                              Padding="14,8"
+                              Command="{Binding CancelEditCommand}"
+                              Content="Cancel"
+                              CornerRadius="6"
+                              IsVisible="{Binding IsEditing}" />
+                    <Button
+                              Grid.Column="2"
+                              Padding="16,8"
+                              Command="{Binding SaveGroupCommand}"
+                              Content="Save Group"
+                              CornerRadius="6"
+                              FontWeight="Bold"
+                              IsVisible="{Binding IsEditing}" />
+
+                    <Button
+                              Grid.Column="2"
+                              Padding="16,8"
+                              Command="{Binding CloseCommand}"
+                              Content="Close"
+                              CornerRadius="6"
+                              IsVisible="{Binding !IsEditing}" />
+                </Grid>
             </Grid>
-
-            <!--  Footer  -->
-            <Grid
-                      Grid.Row="2"
-                      Margin="0,16,0,0"
-                      ColumnDefinitions="*,Auto,Auto">
-                <Button
-                          Grid.Column="0"
-                          Padding="14,8"
-                          Command="{Binding StartNewGroupCommand}"
-                          Content="+ New Preset Group"
-                          CornerRadius="6"
-                          FontWeight="SemiBold"
-                          IsVisible="{Binding !IsEditing}" />
-
-                <Button
-                          Grid.Column="1"
-                          Margin="0,0,8,0"
-                          Padding="14,8"
-                          Command="{Binding CancelEditCommand}"
-                          Content="Cancel"
-                          CornerRadius="6"
-                          IsVisible="{Binding IsEditing}" />
-                <Button
-                          Grid.Column="2"
-                          Padding="16,8"
-                          Command="{Binding SaveGroupCommand}"
-                          Content="Save Group"
-                          CornerRadius="6"
-                          FontWeight="Bold"
-                          IsVisible="{Binding IsEditing}" />
-
-                <Button
-                          Grid.Column="2"
-                          Padding="16,8"
-                          Command="{Binding CloseCommand}"
-                          Content="Close"
-                          CornerRadius="6"
-                          IsVisible="{Binding !IsEditing}" />
-            </Grid>
-        </Grid>
-    </Border>
+        </Border>
+    </ScrollViewer>
 </UserControl>

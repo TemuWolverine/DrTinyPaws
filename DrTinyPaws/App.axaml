@@ -1,4 +1,4 @@
-﻿<Application
+<Application
           x:Class="DrTinyPaws.App"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -15,7 +15,6 @@
         <ResourceDictionary>
             <converters:HexToBrushConverter x:Key="HexToBrushConverter" />
             <converters:DateTimeFormatConverter x:Key="DateTimeFormatConverter" />
-            <converters:DialogVisibilityConverter x:Key="DialogVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 

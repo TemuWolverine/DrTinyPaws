@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
           x:Class="DrTinyPaws.Views.MedicationManagementView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,125 +7,129 @@
           xmlns:models="using:DrTinyPaws.Models"
           xmlns:vm="using:DrTinyPaws.ViewModels"
           d:DesignHeight="600"
-          d:DesignWidth="540"
+          d:DesignWidth="680"
           x:DataType="vm:MedicationManagementViewModel"
           mc:Ignorable="d">
 
-    <Border
-              Width="540"
-              MaxHeight="600"
-              Padding="24"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Top"
-              BorderThickness="1"
-              CornerRadius="12">
-        <Grid RowDefinitions="Auto,*,Auto">
-            <Grid
-                      Grid.Row="0"
-                      Margin="0,0,0,12"
-                      ColumnDefinitions="*,Auto">
-                <TextBlock
-                          FontSize="18"
-                          FontWeight="Bold"
-                          Text="Manage Medications" />
-                <Button
-                          Grid.Column="1"
-                          BorderThickness="0"
-                          Command="{Binding CloseCommand}"
-                          Content="✕" />
-            </Grid>
+    <ScrollViewer>
+        <Border
+                  MaxWidth="680"
+                  Margin="16,12"
+                  Padding="24"
+                  HorizontalAlignment="Center"
+                  BorderThickness="1"
+                  CornerRadius="12">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <Grid
+                          Grid.Row="0"
+                          Margin="0,0,0,14"
+                          ColumnDefinitions="Auto,*,Auto">
+                    <Button Grid.Column="0" Command="{Binding CloseCommand}" Content="← Back" Margin="0,0,12,0" Padding="10,6" CornerRadius="6"/>
+                    <TextBlock
+                              Grid.Column="1"
+                              VerticalAlignment="Center"
+                              FontSize="18"
+                              FontWeight="Bold"
+                              Text="Manage Medications" />
+                    <Button
+                              Grid.Column="2"
+                              BorderThickness="0"
+                              Command="{Binding CloseCommand}"
+                              Content="✕" />
+                </Grid>
 
-            <ScrollViewer Grid.Row="1" MaxHeight="400">
-                <ItemsControl ItemsSource="{Binding Medications}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:Medication">
-                            <Border
-                                      Margin="0,0,0,8"
-                                      Padding="12,8"
-                                      BorderThickness="1"
-                                      CornerRadius="8">
-                                <Grid ColumnDefinitions="Auto,*,Auto">
-                                    <Border
-                                              Grid.Column="0"
-                                              Width="14"
-                                              Height="14"
-                                              Margin="0,0,10,0"
-                                              VerticalAlignment="Center"
-                                              Background="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}"
-                                              CornerRadius="7" />
+                <ScrollViewer Grid.Row="1" MaxHeight="450">
+                    <ItemsControl ItemsSource="{Binding Medications}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:Medication">
+                                <Border
+                                          Margin="0,0,0,8"
+                                          Padding="12,8"
+                                          BorderThickness="1"
+                                          CornerRadius="8">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border
+                                                  Grid.Column="0"
+                                                  Width="14"
+                                                  Height="14"
+                                                  Margin="0,0,10,0"
+                                                  VerticalAlignment="Center"
+                                                  Background="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}"
+                                                  CornerRadius="7" />
 
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <TextBlock
-                                                      FontSize="14"
-                                                      FontWeight="Bold"
-                                                      Text="{Binding Name}" />
-                                            <Border
-                                                      Padding="6,1"
-                                                      VerticalAlignment="Center"
-                                                      CornerRadius="4"
-                                                      IsVisible="{Binding Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                                                <TextBlock FontSize="11" Text="{Binding Dosage}" />
-                                            </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock
+                                                          FontSize="14"
+                                                          FontWeight="Bold"
+                                                          Text="{Binding Name}" />
+                                                <Border
+                                                          Padding="6,1"
+                                                          VerticalAlignment="Center"
+                                                          CornerRadius="4"
+                                                          IsVisible="{Binding Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                                    <TextBlock FontSize="11" Text="{Binding Dosage}" />
+                                                </Border>
+                                            </StackPanel>
+                                            <StackPanel
+                                                      Margin="0,2,0,0"
+                                                      Orientation="Horizontal"
+                                                      Spacing="10">
+                                                <TextBlock
+                                                          FontSize="11"
+                                                          IsVisible="{Binding Schedule, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                          Text="{Binding Schedule}" />
+                                                <TextBlock
+                                                          FontSize="11"
+                                                          IsVisible="{Binding ReminderTime, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                          Text="{Binding ReminderTime, StringFormat='⏰ {0}'}" />
+                                            </StackPanel>
                                         </StackPanel>
+
                                         <StackPanel
-                                                  Margin="0,2,0,0"
+                                                  Grid.Column="2"
+                                                  VerticalAlignment="Center"
                                                   Orientation="Horizontal"
-                                                  Spacing="10">
-                                            <TextBlock
-                                                      FontSize="11"
-                                                      IsVisible="{Binding Schedule, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                      Text="{Binding Schedule}" />
-                                            <TextBlock
-                                                      FontSize="11"
-                                                      IsVisible="{Binding ReminderTime, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                      Text="{Binding ReminderTime, StringFormat='⏰ {0}'}" />
+                                                  Spacing="6">
+                                            <Button
+                                                      Padding="8,4"
+                                                      Command="{Binding $parent[UserControl].((vm:MedicationManagementViewModel)DataContext).RequestEditMedicationCommand}"
+                                                      CommandParameter="{Binding}"
+                                                      Content="Edit"
+                                                      CornerRadius="4" />
+                                            <Button
+                                                      Padding="8,4"
+                                                      Command="{Binding $parent[UserControl].((vm:MedicationManagementViewModel)DataContext).DeleteMedicationCommand}"
+                                                      CommandParameter="{Binding}"
+                                                      Content="Delete"
+                                                      CornerRadius="4" />
                                         </StackPanel>
-                                    </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
 
-                                    <StackPanel
-                                              Grid.Column="2"
-                                              VerticalAlignment="Center"
-                                              Orientation="Horizontal"
-                                              Spacing="6">
-                                        <Button
-                                                  Padding="8,4"
-                                                  Command="{Binding $parent[UserControl].((vm:MedicationManagementViewModel)DataContext).RequestEditMedicationCommand}"
-                                                  CommandParameter="{Binding}"
-                                                  Content="Edit"
-                                                  CornerRadius="4" />
-                                        <Button
-                                                  Padding="8,4"
-                                                  Command="{Binding $parent[UserControl].((vm:MedicationManagementViewModel)DataContext).DeleteMedicationCommand}"
-                                                  CommandParameter="{Binding}"
-                                                  Content="Delete"
-                                                  CornerRadius="4" />
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-
-            <Grid
-                      Grid.Row="2"
-                      Margin="0,16,0,0"
-                      ColumnDefinitions="*,Auto">
-                <Button
-                          Grid.Column="0"
-                          Padding="14,8"
-                          Command="{Binding RequestAddMedicationCommand}"
-                          Content="+ Add New Medication"
-                          CornerRadius="6"
-                          FontWeight="SemiBold" />
-                <Button
-                          Grid.Column="1"
-                          Padding="16,8"
-                          Command="{Binding CloseCommand}"
-                          Content="Done"
-                          CornerRadius="6" />
+                <Grid
+                          Grid.Row="2"
+                          Margin="0,16,0,0"
+                          ColumnDefinitions="*,Auto">
+                    <Button
+                              Grid.Column="0"
+                              Padding="14,8"
+                              Command="{Binding RequestAddMedicationCommand}"
+                              Content="+ Add New Medication"
+                              CornerRadius="6"
+                              FontWeight="SemiBold" />
+                    <Button
+                              Grid.Column="1"
+                              Padding="16,8"
+                              Command="{Binding CloseCommand}"
+                              Content="Done"
+                              CornerRadius="6" />
+                </Grid>
             </Grid>
-        </Grid>
-    </Border>
+        </Border>
+    </ScrollViewer>
 </UserControl>

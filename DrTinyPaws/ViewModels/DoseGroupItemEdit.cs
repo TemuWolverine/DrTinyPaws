@@ -1,22 +1,23 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using DrTinyPaws.Models;
 
 namespace DrTinyPaws.ViewModels;
 
-public partial class DoseGroupItemEdit : ObservableObject
+public partial class DoseGroupItemEdit : ReactiveObject
 {
     public Medication Medication { get; }
 
-    [ObservableProperty]
-    private int _quantity = 1;
+    [Reactive]
+    public partial int Quantity { get; set; }
 
-    [ObservableProperty]
-    private bool _isIncluded;
+    [Reactive]
+    public partial bool IsIncluded { get; set; }
 
     public DoseGroupItemEdit(Medication medication, int quantity = 1, bool isIncluded = false)
     {
         Medication = medication;
-        _quantity = quantity;
-        _isIncluded = isIncluded;
+        Quantity = quantity;
+        IsIncluded = isIncluded;
     }
 }

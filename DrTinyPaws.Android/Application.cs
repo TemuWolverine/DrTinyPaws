@@ -1,7 +1,8 @@
-﻿using Android.App;
+using Android.App;
 using Android.Runtime;
 using Avalonia;
 using Avalonia.Android;
+using Avalonia.ReactiveUI;
 
 namespace DrTinyPaws.Android
 {
@@ -15,7 +16,8 @@ namespace DrTinyPaws.Android
         protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
         {
             return base.CustomizeAppBuilder(builder)
-            .WithInterFont();
+                .WithInterFont()
+                .UseReactiveUI();
         }
     }
 }

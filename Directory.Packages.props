@@ -13,8 +13,9 @@
     <PackageVersion Include="Avalonia.iOS" Version="12.1.2" />
     <PackageVersion Include="Avalonia.Browser" Version="12.1.2" />
     <PackageVersion Include="Avalonia.Android" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.9" />
+    <PackageVersion Include="ReactiveUI.SourceGenerators" Version="4.2.0" />
     <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
-    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="LiveChartsCore" Version="2.1.0-dev-798" />
     <PackageVersion Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.1.0-dev-798" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.12" />

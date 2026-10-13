@@ -1,8 +1,9 @@
-﻿using Avalonia.Controls;
+using Avalonia.ReactiveUI;
+using DrTinyPaws.ViewModels;
 
 namespace DrTinyPaws.Views;
 
-public partial class MedicationEditView : UserControl
+public partial class MedicationEditView : ReactiveUserControl<MedicationEditViewModel>
 {
     public MedicationEditView()
     {

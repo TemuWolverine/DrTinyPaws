@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using DrTinyPaws.Models;
 using DrTinyPaws.Services;
 
@@ -13,26 +13,26 @@ public partial class TakeMedicationViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
 
-    [ObservableProperty]
-    private DateTimeOffset _takenDate = DateTimeOffset.Now;
+    [Reactive]
+    public partial DateTimeOffset TakenDate { get; set; } = DateTimeOffset.Now;
 
-    [ObservableProperty]
-    private TimeSpan _takenTime = DateTime.Now.TimeOfDay;
+    [Reactive]
+    public partial TimeSpan TakenTime { get; set; } = DateTime.Now.TimeOfDay;
 
-    [ObservableProperty]
-    private string _notes = string.Empty;
+    [Reactive]
+    public partial string Notes { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _errorMessage = string.Empty;
+    [Reactive]
+    public partial string ErrorMessage { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private bool _showCreateGroupPanel;
+    [Reactive]
+    public partial bool ShowCreateGroupPanel { get; set; }
 
-    [ObservableProperty]
-    private string _newGroupName = string.Empty;
+    [Reactive]
+    public partial string NewGroupName { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private string _newGroupDescription = string.Empty;
+    [Reactive]
+    public partial string NewGroupDescription { get; set; } = string.Empty;
 
     public ObservableCollection<TakeMedicationEntryItem> MedItems { get; } = [];
     public ObservableCollection<DoseGroup> AvailableGroups { get; } = [];
@@ -40,7 +40,7 @@ public partial class TakeMedicationViewModel : ViewModelBase
     public event Action? Saved;
     public event Action? Cancelled;
 
-    public TakeMedicationViewModel(IDataStore dataStore)
+    public TakeMedicationViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
     {
         _dataStore = dataStore;
     }
@@ -62,7 +62,7 @@ public partial class TakeMedicationViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void ApplyGroup(DoseGroup group)
     {
         // First reset all items
@@ -84,7 +84,7 @@ public partial class TakeMedicationViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void ToggleCreateGroup()
     {
         ShowCreateGroupPanel = !ShowCreateGroupPanel;
@@ -94,7 +94,7 @@ public partial class TakeMedicationViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task SaveSelectionAsGroupAsync()
     {
         if (string.IsNullOrWhiteSpace(NewGroupName))
@@ -129,7 +129,7 @@ public partial class TakeMedicationViewModel : ViewModelBase
         ErrorMessage = string.Empty;
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public async Task RecordDoseAsync()
     {
         var selected = MedItems.Where(i => i.IsSelected && i.Quantity > 0).ToList();
@@ -153,11 +153,13 @@ public partial class TakeMedicationViewModel : ViewModelBase
 
         await _dataStore.LogIntakesAsync(intakes);
         Saved?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     public void Cancel()
     {
         Cancelled?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 }

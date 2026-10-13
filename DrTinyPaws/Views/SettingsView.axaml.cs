@@ -1,8 +1,9 @@
-﻿using Avalonia.Controls;
+using Avalonia.ReactiveUI;
+using DrTinyPaws.ViewModels;
 
 namespace DrTinyPaws.Views;
 
-public partial class SettingsView : UserControl
+public partial class SettingsView : ReactiveUserControl<SettingsViewModel>
 {
     public SettingsView()
     {
