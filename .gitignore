@@ -452,3 +452,11 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Jekyll & Web Subsite
+_site/
+.jekyll-cache/
+.jekyll-metadata
+web/_site/
+web/.jekyll-cache/
+web/.jekyll-metadata

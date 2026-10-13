@@ -1,0 +1,136 @@
+name: Build and Publish
+
+on:
+  workflow_dispatch: {}
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  generate-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set_version.outputs.version }}
+    steps:
+      - name: Set Version Variable
+        id: set_version
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            VER="${{ github.ref_name }}"
+            VER="${VER#v}"
+            echo "version=$VER" >> $GITHUB_OUTPUT
+          else
+            echo "version=0.0.1" >> $GITHUB_OUTPUT
+          fi
+
+  windowsbuild:
+    needs:
+      - generate-version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET 10.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Install dependencies
+        run: dotnet restore DrTinyPaws.Desktop/DrTinyPaws.Desktop.csproj
+
+      - name: Publish Windows (Single-File Self-Contained)
+        run: dotnet publish DrTinyPaws.Desktop/DrTinyPaws.Desktop.csproj -c Release -r win-x64 /p:Version=${{ needs.generate-version.outputs.version }} -o ./output/win-x64
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-x64-build
+          path: ./output/win-x64
+
+  androidbuild:
+    needs:
+      - generate-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup .NET 10.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Install Android Workload
+        run: dotnet workload install android
+
+      - name: Install dependencies
+        run: dotnet restore DrTinyPaws.Android/DrTinyPaws.Android.csproj
+
+      - name: Publish Android APK
+        run: dotnet publish DrTinyPaws.Android/DrTinyPaws.Android.csproj -c Release -f net10.0-android /p:Version=${{ needs.generate-version.outputs.version }} -o ./output/android
+
+      - name: Prepare Android APK
+        run: |
+          mkdir -p ./output/android-package
+          # Prefer signed APK if present, fallback to unsigned
+          if ls ./output/android/*-Signed.apk 1> /dev/null 2>&1; then
+            cp ./output/android/*-Signed.apk ./output/android-package/NurseJoy.apk
+          else
+            cp ./output/android/*.apk ./output/android-package/NurseJoy.apk
+          fi
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build
+          path: ./output/android-package/*.apk
+
+  release:
+    needs:
+      - generate-version
+      - windowsbuild
+      - androidbuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: win-x64-build
+          path: win-x64
+
+      - name: Download Android artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-build
+          path: android
+
+      - name: Package Release Assets
+        run: |
+          mkdir -p releases
+          # Package Windows zip
+          (cd win-x64 && zip -r ../releases/NurseJoy-Windows-x64.zip ./*)
+          # Package Android APK
+          cp android/*.apk releases/NurseJoy.apk
+
+      - name: Upload assets to published Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            releases/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

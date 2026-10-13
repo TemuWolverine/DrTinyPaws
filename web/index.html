@@ -1,0 +1,17 @@
+---
+layout: default
+---
+<article class="flex flex-col lg:flex-row bg-surface-container-lowest rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div class="flex flex-col flex-1 p-space-lg justify-between gap-space-xs">
+        <h1>{{ page.title }}</h1>
+        {% if page.toc == true %}
+            <div id="table-of-contents">
+                Contents
+                {{ content | toc_only }}
+                <br />
+            </div>
+        {% endif %}
+
+        {{content}}
+    </div>
+</article>
