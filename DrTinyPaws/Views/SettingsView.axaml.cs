@@ -78,7 +78,7 @@ public partial class SettingsView : ReactiveUserControl<SettingsViewModel>
 
                 var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
                 {
-                    Title = "Select NurseJoy Database File",
+                    Title = "Select DrTinyPaws Database File",
                     AllowMultiple = false,
                     FileTypeFilter =
                     [

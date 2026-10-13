@@ -31,7 +31,7 @@
 
             <TextBlock Text="DrTinyPaws stores your medication data in a local SQLite database that is fully compatible with Syncthing, Nextcloud, Google Drive, or OneDrive desktop sync clients." TextWrapping="Wrap" />
 
-            <!-- Database Path Configuration -->
+            <!--  Database Path Configuration  -->
             <StackPanel Spacing="4">
                 <TextBlock FontWeight="SemiBold" Text="Current Active Database File:" />
                 <Grid ColumnDefinitions="*,Auto">
@@ -63,7 +63,7 @@
                 </StackPanel>
             </Border>
 
-            <!-- Import from Pill Logger -->
+            <!--  Import from Pill Logger  -->
             <Border
                       Padding="14"
                       BorderThickness="1"
@@ -73,13 +73,9 @@
                               FontSize="15"
                               FontWeight="Bold"
                               Text="Import from Pill Logger" />
-                    <TextBlock
-                              Text="Select a Pill Logger database file (.db) to import all pills, intake history, and routine presets into NurseJoy."
-                              TextWrapping="Wrap" />
+                    <TextBlock Text="Select a Pill Logger database file (.db) to import all pills, intake history, and routine presets into DrTinyPaws." TextWrapping="Wrap" />
 
-                    <CheckBox
-                              IsChecked="{Binding ClearExistingDataOnImport}"
-                              Content="Clear existing data before import (recommended for clean migration)" />
+                    <CheckBox Content="Clear existing data before import (recommended for clean migration)" IsChecked="{Binding ClearExistingDataOnImport}" />
 
                     <Grid ColumnDefinitions="Auto,*">
                         <Button
@@ -93,9 +89,9 @@
                         <ProgressBar
                                   Grid.Column="1"
                                   Margin="16,0,0,0"
+                                  VerticalAlignment="Center"
                                   IsIndeterminate="True"
-                                  IsVisible="{Binding IsImporting}"
-                                  VerticalAlignment="Center" />
+                                  IsVisible="{Binding IsImporting}" />
                     </Grid>
 
                     <TextBlock
