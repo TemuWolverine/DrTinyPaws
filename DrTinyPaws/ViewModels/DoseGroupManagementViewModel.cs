@@ -13,61 +13,63 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
 
+    public event Action? Cancelled;
+
+    public event Action? Saved;
+
+    [Reactive]
+    public partial string ErrorMessage { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string GroupColorHex { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string GroupDescription { get; set; } = string.Empty;
+
     [Reactive]
     public partial string GroupId { get; set; } = string.Empty;
 
     [Reactive]
     public partial string GroupName { get; set; } = string.Empty;
 
-    [Reactive]
-    public partial string GroupDescription { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string GroupColorHex { get; set; } = string.Empty;
+    public ObservableCollection<DoseGroup> Groups { get; } = [];
 
     [Reactive]
     public partial bool IsEditing { get; set; }
 
-    [Reactive]
-    public partial string ErrorMessage { get; set; } = string.Empty;
-
-    public ObservableCollection<DoseGroup> Groups { get; } = [];
     public ObservableCollection<DoseGroupItemEdit> MedicationSelection { get; } = [];
-
-    public event Action? Saved;
-    public event Action? Cancelled;
 
     public DoseGroupManagementViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
     {
         _dataStore = dataStore;
     }
 
-    public async Task InitializeAsync()
+    [ReactiveCommand]
+    public void CancelEdit()
     {
-        await LoadGroupsAsync();
-    }
-
-    public async Task LoadGroupsAsync()
-    {
-        var groups = await _dataStore.GetDoseGroupsAsync();
-        Groups.Clear();
-        foreach (var g in groups)
+        if (IsEditing)
         {
-            Groups.Add(g);
+            IsEditing = false;
+        }
+        else
+        {
+            Cancelled?.Invoke();
+            HostScreen?.Router.NavigateBack.Execute().Subscribe();
         }
     }
 
     [ReactiveCommand]
-    public async Task StartNewGroupAsync()
+    public void Close()
     {
-        GroupId = Guid.NewGuid().ToString();
-        GroupName = string.Empty;
-        GroupDescription = string.Empty;
-        GroupColorHex = string.Empty;
-        IsEditing = true;
-        ErrorMessage = string.Empty;
+        Cancelled?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+    }
 
-        await LoadMedicationsForEditAsync(null);
+    [ReactiveCommand]
+    public async Task DeleteGroupAsync(DoseGroup group)
+    {
+        await _dataStore.DeleteDoseGroupAsync(group.Id);
+        await LoadGroupsAsync();
     }
 
     [ReactiveCommand]
@@ -83,19 +85,18 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
         await LoadMedicationsForEditAsync(group);
     }
 
-    private async Task LoadMedicationsForEditAsync(DoseGroup? group)
+    public async Task InitializeAsync()
     {
-        var meds = await _dataStore.GetMedicationsAsync(includeInactive: false);
-        MedicationSelection.Clear();
+        await LoadGroupsAsync();
+    }
 
-        foreach (var med in meds)
+    public async Task LoadGroupsAsync()
+    {
+        var groups = await _dataStore.GetDoseGroupsAsync();
+        Groups.Clear();
+        foreach (var g in groups)
         {
-            var existingItem = group?.Items.FirstOrDefault(i => i.MedicationId == med.Id);
-            MedicationSelection.Add(new DoseGroupItemEdit(
-                med,
-                quantity: existingItem?.Quantity ?? 1,
-                isIncluded: existingItem != null
-            ));
+            Groups.Add(g);
         }
     }
 
@@ -136,30 +137,31 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
-    public async Task DeleteGroupAsync(DoseGroup group)
+    public async Task StartNewGroupAsync()
     {
-        await _dataStore.DeleteDoseGroupAsync(group.Id);
-        await LoadGroupsAsync();
+        GroupId = Guid.NewGuid().ToString();
+        GroupName = string.Empty;
+        GroupDescription = string.Empty;
+        GroupColorHex = string.Empty;
+        IsEditing = true;
+        ErrorMessage = string.Empty;
+
+        await LoadMedicationsForEditAsync(null);
     }
 
-    [ReactiveCommand]
-    public void CancelEdit()
+    private async Task LoadMedicationsForEditAsync(DoseGroup? group)
     {
-        if (IsEditing)
-        {
-            IsEditing = false;
-        }
-        else
-        {
-            Cancelled?.Invoke();
-            HostScreen?.Router.NavigateBack.Execute().Subscribe();
-        }
-    }
+        var meds = await _dataStore.GetMedicationsAsync(includeInactive: false);
+        MedicationSelection.Clear();
 
-    [ReactiveCommand]
-    public void Close()
-    {
-        Cancelled?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+        foreach (var med in meds)
+        {
+            var existingItem = group?.Items.FirstOrDefault(i => i.MedicationId == med.Id);
+            MedicationSelection.Add(new DoseGroupItemEdit(
+                med,
+                quantity: existingItem?.Quantity ?? 1,
+                isIncluded: existingItem != null
+            ));
+        }
     }
 }

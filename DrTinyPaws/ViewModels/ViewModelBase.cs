@@ -7,10 +7,9 @@ namespace DrTinyPaws.ViewModels;
 
 public abstract class ViewModelBase : ReactiveObject, IRoutableViewModel
 {
-    public virtual string? UrlPathSegment { get; protected set; }
     public IScreen HostScreen { get; protected set; }
-
     public ReactiveCommand<Unit, IRoutableViewModel?> NavigateBackCommand { get; }
+    public virtual string? UrlPathSegment { get; protected set; }
 
     protected ViewModelBase(IScreen? hostScreen = null, string? urlPathSegment = null)
     {

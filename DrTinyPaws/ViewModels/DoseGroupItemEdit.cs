@@ -6,13 +6,13 @@ namespace DrTinyPaws.ViewModels;
 
 public partial class DoseGroupItemEdit : ReactiveObject
 {
+    [Reactive]
+    public partial bool IsIncluded { get; set; }
+
     public Medication Medication { get; }
 
     [Reactive]
     public partial int Quantity { get; set; }
-
-    [Reactive]
-    public partial bool IsIncluded { get; set; }
 
     public DoseGroupItemEdit(Medication medication, int quantity = 1, bool isIncluded = false)
     {

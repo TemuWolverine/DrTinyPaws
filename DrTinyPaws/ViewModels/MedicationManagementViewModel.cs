@@ -12,11 +12,13 @@ public partial class MedicationManagementViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
 
-    public ObservableCollection<Medication> Medications { get; } = [];
-
     public event Action? AddMedicationRequested;
-    public event Action<Medication>? EditMedicationRequested;
+
     public event Action? Closed;
+
+    public event Action<Medication>? EditMedicationRequested;
+
+    public ObservableCollection<Medication> Medications { get; } = [];
 
     public MedicationManagementViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
     {
@@ -29,6 +31,20 @@ public partial class MedicationManagementViewModel : ViewModelBase
                 _ = LoadMedicationsAsync();
             });
         };
+    }
+
+    [ReactiveCommand]
+    public void Close()
+    {
+        Closed?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+    }
+
+    [ReactiveCommand]
+    public async Task DeleteMedicationAsync(Medication medication)
+    {
+        await _dataStore.DeleteMedicationAsync(medication.Id);
+        await LoadMedicationsAsync();
     }
 
     public async Task InitializeAsync()
@@ -64,19 +80,5 @@ public partial class MedicationManagementViewModel : ViewModelBase
         {
             HostScreen.Router.Navigate.Execute(new MedicationEditViewModel(_dataStore, ServiceLocator.NotificationService, medication, HostScreen)).Subscribe();
         }
-    }
-
-    [ReactiveCommand]
-    public async Task DeleteMedicationAsync(Medication medication)
-    {
-        await _dataStore.DeleteMedicationAsync(medication.Id);
-        await LoadMedicationsAsync();
-    }
-
-    [ReactiveCommand]
-    public void Close()
-    {
-        Closed?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 }

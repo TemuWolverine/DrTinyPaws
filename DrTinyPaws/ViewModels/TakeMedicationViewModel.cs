@@ -13,53 +13,38 @@ public partial class TakeMedicationViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
 
+    public event Action? Cancelled;
+
+    public event Action? Saved;
+
+    public ObservableCollection<DoseGroup> AvailableGroups { get; } = [];
+
+    [Reactive]
+    public partial string ErrorMessage { get; set; } = string.Empty;
+
+    public ObservableCollection<TakeMedicationEntryItem> MedItems { get; } = [];
+
+    [Reactive]
+    public partial string NewGroupDescription { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string NewGroupName { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string Notes { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial bool ShowCreateGroupPanel { get; set; }
+
     [Reactive]
     public partial DateTimeOffset TakenDate { get; set; } = DateTimeOffset.Now;
 
     [Reactive]
     public partial TimeSpan TakenTime { get; set; } = DateTime.Now.TimeOfDay;
 
-    [Reactive]
-    public partial string Notes { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string ErrorMessage { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial bool ShowCreateGroupPanel { get; set; }
-
-    [Reactive]
-    public partial string NewGroupName { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string NewGroupDescription { get; set; } = string.Empty;
-
-    public ObservableCollection<TakeMedicationEntryItem> MedItems { get; } = [];
-    public ObservableCollection<DoseGroup> AvailableGroups { get; } = [];
-
-    public event Action? Saved;
-    public event Action? Cancelled;
-
     public TakeMedicationViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
     {
         _dataStore = dataStore;
-    }
-
-    public async Task InitializeAsync()
-    {
-        var meds = await _dataStore.GetMedicationsAsync(includeInactive: false);
-        MedItems.Clear();
-        foreach (var med in meds)
-        {
-            MedItems.Add(new TakeMedicationEntryItem(med, quantity: 1, isSelected: false));
-        }
-
-        var groups = await _dataStore.GetDoseGroupsAsync();
-        AvailableGroups.Clear();
-        foreach (var g in groups)
-        {
-            AvailableGroups.Add(g);
-        }
     }
 
     [ReactiveCommand]
@@ -85,13 +70,54 @@ public partial class TakeMedicationViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
-    public void ToggleCreateGroup()
+    public void Cancel()
     {
-        ShowCreateGroupPanel = !ShowCreateGroupPanel;
-        if (ShowCreateGroupPanel && string.IsNullOrWhiteSpace(NewGroupName))
+        Cancelled?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+    }
+
+    public async Task InitializeAsync()
+    {
+        var meds = await _dataStore.GetMedicationsAsync(includeInactive: false);
+        MedItems.Clear();
+        foreach (var med in meds)
         {
-            NewGroupName = "Custom Preset";
+            MedItems.Add(new TakeMedicationEntryItem(med, quantity: 1, isSelected: false));
         }
+
+        var groups = await _dataStore.GetDoseGroupsAsync();
+        AvailableGroups.Clear();
+        foreach (var g in groups)
+        {
+            AvailableGroups.Add(g);
+        }
+    }
+
+    [ReactiveCommand]
+    public async Task RecordDoseAsync()
+    {
+        var selected = MedItems.Where(i => i.IsSelected && i.Quantity > 0).ToList();
+        if (selected.Count == 0)
+        {
+            ErrorMessage = "Please select at least one medication to record.";
+            return;
+        }
+
+        ErrorMessage = string.Empty;
+
+        var timestamp = TakenDate.Date.Add(TakenTime);
+
+        var intakes = selected.Select(item => new MedicationIntake
+        {
+            MedicationId = item.Medication.Id,
+            Quantity = item.Quantity,
+            TakenAt = timestamp,
+            Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim()
+        }).ToList();
+
+        await _dataStore.LogIntakesAsync(intakes);
+        Saved?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 
     [ReactiveCommand]
@@ -130,36 +156,12 @@ public partial class TakeMedicationViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
-    public async Task RecordDoseAsync()
+    public void ToggleCreateGroup()
     {
-        var selected = MedItems.Where(i => i.IsSelected && i.Quantity > 0).ToList();
-        if (selected.Count == 0)
+        ShowCreateGroupPanel = !ShowCreateGroupPanel;
+        if (ShowCreateGroupPanel && string.IsNullOrWhiteSpace(NewGroupName))
         {
-            ErrorMessage = "Please select at least one medication to record.";
-            return;
+            NewGroupName = "Custom Preset";
         }
-
-        ErrorMessage = string.Empty;
-
-        var timestamp = TakenDate.Date.Add(TakenTime);
-
-        var intakes = selected.Select(item => new MedicationIntake
-        {
-            MedicationId = item.Medication.Id,
-            Quantity = item.Quantity,
-            TakenAt = timestamp,
-            Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim()
-        }).ToList();
-
-        await _dataStore.LogIntakesAsync(intakes);
-        Saved?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
-    }
-
-    [ReactiveCommand]
-    public void Cancel()
-    {
-        Cancelled?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 }

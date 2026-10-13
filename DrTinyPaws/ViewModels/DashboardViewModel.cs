@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,21 +17,23 @@ public partial class DashboardViewModel : ViewModelBase
     [Reactive]
     public partial WeeklyChartViewModel ChartViewModel { get; set; }
 
+    public ObservableCollection<DoseGroup> DoseGroups { get; } = [];
+
+    public ObservableCollection<Medication> Medications { get; } = [];
+
     [Reactive]
-    public partial int TotalDosesToday { get; set; }
+    public partial string NotificationBanner { get; set; } = string.Empty;
+
+    public ObservableCollection<MedicationIntake> RecentIntakes { get; } = [];
+
+    [Reactive]
+    public partial bool ShowNotificationBanner { get; set; }
 
     [Reactive]
     public partial int TotalDosesThisWeek { get; set; }
 
     [Reactive]
-    public partial string NotificationBanner { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial bool ShowNotificationBanner { get; set; }
-
-    public ObservableCollection<MedicationIntake> RecentIntakes { get; } = [];
-    public ObservableCollection<Medication> Medications { get; } = [];
-    public ObservableCollection<DoseGroup> DoseGroups { get; } = [];
+    public partial int TotalDosesToday { get; set; }
 
     public DashboardViewModel(IScreen hostScreen, IDataStore dataStore, INotificationService notificationService)
         : base(hostScreen, "Dashboard")
@@ -69,10 +70,10 @@ public partial class DashboardViewModel : ViewModelBase
         _ = InitializeAsync();
     }
 
-    public async Task InitializeAsync()
+    [ReactiveCommand]
+    public async Task DeleteIntakeAsync(MedicationIntake intake)
     {
-        await _dataStore.InitializeAsync();
-        await _notificationService.InitializeAsync();
+        await _dataStore.DeleteIntakeAsync(intake.Id);
         await RefreshDataAsync();
     }
 
@@ -81,6 +82,62 @@ public partial class DashboardViewModel : ViewModelBase
     {
         ShowNotificationBanner = false;
         NotificationBanner = string.Empty;
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _dataStore.InitializeAsync();
+        await _notificationService.InitializeAsync();
+        await RefreshDataAsync();
+    }
+
+    [ReactiveCommand]
+    public async Task OpenManageGroupsAsync()
+    {
+        var vm = new DoseGroupManagementViewModel(_dataStore, HostScreen);
+        await vm.InitializeAsync();
+        HostScreen.Router.Navigate.Execute(vm).Subscribe();
+    }
+
+    [ReactiveCommand]
+    public async Task OpenManageMedicationsAsync()
+    {
+        var vm = new MedicationManagementViewModel(_dataStore, HostScreen);
+        await vm.InitializeAsync();
+        HostScreen.Router.Navigate.Execute(vm).Subscribe();
+    }
+
+    [ReactiveCommand]
+    public void OpenSettings()
+    {
+        var vm = new SettingsViewModel(_dataStore, HostScreen);
+        HostScreen.Router.Navigate.Execute(vm).Subscribe();
+    }
+
+    [ReactiveCommand]
+    public async Task OpenTakeMedicationAsync()
+    {
+        var vm = new TakeMedicationViewModel(_dataStore, HostScreen);
+        await vm.InitializeAsync();
+        HostScreen.Router.Navigate.Execute(vm).Subscribe();
+    }
+
+    [ReactiveCommand]
+    public async Task QuickTakeGroupAsync(DoseGroup group)
+    {
+        if (group.Items.Count == 0) return;
+
+        var now = DateTime.Now;
+        var intakes = group.Items.Select(item => new MedicationIntake
+        {
+            MedicationId = item.MedicationId,
+            Quantity = item.Quantity,
+            TakenAt = now,
+            Notes = $"From group: {group.Name}"
+        }).ToList();
+
+        await _dataStore.LogIntakesAsync(intakes);
+        await RefreshDataAsync();
     }
 
     public async Task RefreshDataAsync()
@@ -125,61 +182,5 @@ public partial class DashboardViewModel : ViewModelBase
         var today = DateTime.Today;
         TotalDosesToday = recent.Where(i => i.TakenAt.Date == today).Sum(i => i.Quantity);
         TotalDosesThisWeek = weekIntakes.Sum(i => i.Quantity);
-    }
-
-    [ReactiveCommand]
-    public async Task OpenTakeMedicationAsync()
-    {
-        var vm = new TakeMedicationViewModel(_dataStore, HostScreen);
-        await vm.InitializeAsync();
-        HostScreen.Router.Navigate.Execute(vm).Subscribe();
-    }
-
-    [ReactiveCommand]
-    public async Task OpenManageMedicationsAsync()
-    {
-        var vm = new MedicationManagementViewModel(_dataStore, HostScreen);
-        await vm.InitializeAsync();
-        HostScreen.Router.Navigate.Execute(vm).Subscribe();
-    }
-
-    [ReactiveCommand]
-    public async Task OpenManageGroupsAsync()
-    {
-        var vm = new DoseGroupManagementViewModel(_dataStore, HostScreen);
-        await vm.InitializeAsync();
-        HostScreen.Router.Navigate.Execute(vm).Subscribe();
-    }
-
-    [ReactiveCommand]
-    public void OpenSettings()
-    {
-        var vm = new SettingsViewModel(_dataStore, HostScreen);
-        HostScreen.Router.Navigate.Execute(vm).Subscribe();
-    }
-
-    [ReactiveCommand]
-    public async Task QuickTakeGroupAsync(DoseGroup group)
-    {
-        if (group.Items.Count == 0) return;
-
-        var now = DateTime.Now;
-        var intakes = group.Items.Select(item => new MedicationIntake
-        {
-            MedicationId = item.MedicationId,
-            Quantity = item.Quantity,
-            TakenAt = now,
-            Notes = $"From group: {group.Name}"
-        }).ToList();
-
-        await _dataStore.LogIntakesAsync(intakes);
-        await RefreshDataAsync();
-    }
-
-    [ReactiveCommand]
-    public async Task DeleteIntakeAsync(MedicationIntake intake)
-    {
-        await _dataStore.DeleteIntakeAsync(intake.Id);
-        await RefreshDataAsync();
     }
 }

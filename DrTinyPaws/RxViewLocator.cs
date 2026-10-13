@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using ReactiveUI;
 using DrTinyPaws.ViewModels;
 using DrTinyPaws.Views;

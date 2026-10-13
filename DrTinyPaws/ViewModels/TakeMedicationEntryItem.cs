@@ -6,10 +6,10 @@ namespace DrTinyPaws.ViewModels;
 
 public partial class TakeMedicationEntryItem : ReactiveObject
 {
-    public Medication Medication { get; }
-
     [Reactive]
     public partial bool IsSelected { get; set; }
+
+    public Medication Medication { get; }
 
     [Reactive]
     public partial int Quantity { get; set; }
@@ -19,13 +19,6 @@ public partial class TakeMedicationEntryItem : ReactiveObject
         Medication = medication;
         Quantity = quantity;
         IsSelected = isSelected;
-    }
-
-    [ReactiveCommand]
-    public void Increment()
-    {
-        Quantity++;
-        IsSelected = true;
     }
 
     [ReactiveCommand]
@@ -40,5 +33,12 @@ public partial class TakeMedicationEntryItem : ReactiveObject
             Quantity = 0;
             IsSelected = false;
         }
+    }
+
+    [ReactiveCommand]
+    public void Increment()
+    {
+        Quantity++;
+        IsSelected = true;
     }
 }

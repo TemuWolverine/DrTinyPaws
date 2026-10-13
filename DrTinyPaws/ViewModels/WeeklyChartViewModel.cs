@@ -13,25 +13,25 @@ namespace DrTinyPaws.ViewModels;
 
 public partial class WeeklyChartViewModel : ViewModelBase
 {
+    public event Action? WeekChanged;
+
     [Reactive]
-    public partial DateTime WeekStartDate { get; set; }
+    public partial ISeries[] Series { get; set; } = [];
+
+    [Reactive]
+    public partial int TotalWeeklyDoses { get; set; }
 
     [Reactive]
     public partial string WeekLabel { get; set; } = string.Empty;
 
     [Reactive]
-    public partial ISeries[] Series { get; set; } = [];
+    public partial DateTime WeekStartDate { get; set; }
 
     [Reactive]
     public partial Axis[] XAxes { get; set; } = [];
 
     [Reactive]
     public partial Axis[] YAxes { get; set; } = [];
-
-    [Reactive]
-    public partial int TotalWeeklyDoses { get; set; }
-
-    public event Action? WeekChanged;
 
     public WeeklyChartViewModel(IScreen? hostScreen = null) : base(hostScreen)
     {
@@ -43,45 +43,12 @@ public partial class WeeklyChartViewModel : ViewModelBase
         SetupAxes();
     }
 
-    private void SetupAxes()
-    {
-        var dayNames = new string[7];
-        for (int i = 0; i < 7; i++)
-        {
-            var day = WeekStartDate.AddDays(i);
-            dayNames[i] = $"{day:ddd}\n{day:d MMM}";
-        }
-
-        XAxes =
-        [
-            new Axis
-            {
-                Labels = dayNames,
-                TextSize = 11
-            }
-        ];
-
-        YAxes =
-        [
-            new Axis
-            {
-                MinStep = 1,
-                MinLimit = 0,
-                TextSize = 11
-            }
-        ];
-    }
-
-    private void UpdateWeekLabel()
-    {
-        var weekEnd = WeekStartDate.AddDays(6);
-        WeekLabel = $"{WeekStartDate:dd MMM} – {weekEnd:dd MMM yyyy}";
-    }
-
     [ReactiveCommand]
-    public void PreviousWeek()
+    public void CurrentWeek()
     {
-        WeekStartDate = WeekStartDate.AddDays(-7);
+        var now = DateTime.Now;
+        int diff = (7 + (int)now.DayOfWeek - (int)DayOfWeek.Monday) % 7;
+        WeekStartDate = now.Date.AddDays(-diff);
         UpdateWeekLabel();
         SetupAxes();
         WeekChanged?.Invoke();
@@ -97,11 +64,9 @@ public partial class WeeklyChartViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
-    public void CurrentWeek()
+    public void PreviousWeek()
     {
-        var now = DateTime.Now;
-        int diff = (7 + (int)now.DayOfWeek - (int)DayOfWeek.Monday) % 7;
-        WeekStartDate = now.Date.AddDays(-diff);
+        WeekStartDate = WeekStartDate.AddDays(-7);
         UpdateWeekLabel();
         SetupAxes();
         WeekChanged?.Invoke();
@@ -157,13 +122,51 @@ public partial class WeeklyChartViewModel : ViewModelBase
                     Values = dayCounts,
                     Fill = new SolidColorPaint(skColor),
                     Stroke = null,
-                    MaxBarWidth = 40,
-                    Rx = 3, // rounded top edges
-                    Ry = 3
+                    MaxBarWidth = double.MaxValue,
+                    Padding = 1,
+                    Rx = 0,
+                    Ry = 0
                 });
             }
         }
 
         Series = seriesList.ToArray();
+    }
+
+    private void SetupAxes()
+    {
+        var dayNames = new string[7];
+        for (int i = 0; i < 7; i++)
+        {
+            var day = WeekStartDate.AddDays(i);
+            dayNames[i] = $"{day:ddd}";
+        }
+
+        XAxes =
+        [
+            new Axis
+            {
+                Labels = dayNames,
+                TextSize = 11,
+                MinLimit = -0.5,
+                MaxLimit = 6.5
+            }
+        ];
+
+        YAxes =
+        [
+            new Axis
+            {
+                MinStep = 1,
+                MinLimit = 0,
+                TextSize = 11
+            }
+        ];
+    }
+
+    private void UpdateWeekLabel()
+    {
+        var weekEnd = WeekStartDate.AddDays(6);
+        WeekLabel = $"{WeekStartDate:dd MMM} – {weekEnd:dd MMM yyyy}";
     }
 }

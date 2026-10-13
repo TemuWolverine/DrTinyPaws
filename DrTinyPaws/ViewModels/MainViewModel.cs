@@ -9,9 +9,8 @@ public class MainViewModel : ReactiveObject, IScreen
     private readonly IDataStore _dataStore;
     private readonly INotificationService _notificationService;
 
-    public RoutingState Router { get; } = new RoutingState();
-
     public DashboardViewModel Dashboard { get; }
+    public RoutingState Router { get; } = new RoutingState();
 
     public MainViewModel() : this(ServiceLocator.DataStore, ServiceLocator.NotificationService)
     {

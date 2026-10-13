@@ -32,7 +32,7 @@
                           Text="Manage Medications" />
             </Grid>
 
-            <ScrollViewer Grid.Row="1" MaxHeight="450">
+            <ScrollViewer Grid.Row="1">
                 <ItemsControl ItemsSource="{Binding Medications}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:Medication">

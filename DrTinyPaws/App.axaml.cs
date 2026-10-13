@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using ReactiveUI;
-using Splat;
 using DrTinyPaws.ViewModels;
 using DrTinyPaws.Views;
+using ReactiveUI;
+using Splat;
 
 namespace DrTinyPaws;
 
@@ -22,7 +22,7 @@ public partial class App : Application
     private static void RegisterViews()
     {
         var locator = new RxViewLocator();
-        Locator.CurrentMutable.RegisterConstant<ReactiveUI.IViewLocator>(locator);
+        Locator.CurrentMutable.RegisterConstant<IViewLocator>(locator);
         Locator.CurrentMutable.Register(() => new DashboardView(), typeof(IViewFor<DashboardViewModel>));
         Locator.CurrentMutable.Register(() => new TakeMedicationView(), typeof(IViewFor<TakeMedicationViewModel>));
         Locator.CurrentMutable.Register(() => new MedicationManagementView(), typeof(IViewFor<MedicationManagementViewModel>));

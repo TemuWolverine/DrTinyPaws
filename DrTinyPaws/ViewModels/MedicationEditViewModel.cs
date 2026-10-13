@@ -13,34 +13,9 @@ public partial class MedicationEditViewModel : ViewModelBase
     private readonly IDataStore _dataStore;
     private readonly INotificationService _notificationService;
 
-    [Reactive]
-    public partial string Id { get; set; } = string.Empty;
+    public event Action? Cancelled;
 
-    [Reactive]
-    public partial string Name { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string Dosage { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string ColorHex { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string Schedule { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string ReminderTime { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string Notes { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string ErrorMessage { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial bool IsEditing { get; set; }
-
-    public string Title => IsEditing ? "Edit Medication" : "Add Medication";
+    public event Action? Saved;
 
     public List<string> AvailableColors { get; } =
     [
@@ -58,6 +33,9 @@ public partial class MedicationEditViewModel : ViewModelBase
         "#64748B"  // Slate
     ];
 
+    [Reactive]
+    public partial string ColorHex { get; set; } = string.Empty;
+
     public List<string> CommonSchedules { get; } =
     [
         "Once daily (Morning)",
@@ -69,8 +47,31 @@ public partial class MedicationEditViewModel : ViewModelBase
         "As needed"
     ];
 
-    public event Action? Saved;
-    public event Action? Cancelled;
+    [Reactive]
+    public partial string Dosage { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string ErrorMessage { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string Id { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial bool IsEditing { get; set; }
+
+    [Reactive]
+    public partial string Name { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string Notes { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string ReminderTime { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string Schedule { get; set; } = string.Empty;
+
+    public string Title => IsEditing ? "Edit Medication" : "Add Medication";
 
     public MedicationEditViewModel(
         IDataStore dataStore,
@@ -95,9 +96,10 @@ public partial class MedicationEditViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
-    public void SelectColor(string color)
+    public void Cancel()
     {
-        ColorHex = color;
+        Cancelled?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 
     [ReactiveCommand]
@@ -145,9 +147,8 @@ public partial class MedicationEditViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
-    public void Cancel()
+    public void SelectColor(string color)
     {
-        Cancelled?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+        ColorHex = color;
     }
 }

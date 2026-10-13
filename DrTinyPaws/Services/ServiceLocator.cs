@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DrTinyPaws.Services;
+﻿namespace DrTinyPaws.Services;
 
 public static class ServiceLocator
 {

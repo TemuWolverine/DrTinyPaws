@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using DrTinyPaws.Models;
 
@@ -14,23 +13,22 @@ public class DefaultNotificationService : INotificationService, IDisposable
 
     public event Action<string, string>? NotificationReceived;
 
+    public Task CancelReminderAsync(string medicationId)
+    {
+        _scheduledReminders.TryRemove(medicationId, out _);
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _checkTimer?.Dispose();
+    }
+
     public Task InitializeAsync()
     {
         // Check every minute for medication reminders
         _checkTimer = new System.Threading.Timer(CheckRemindersCallback, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
         return Task.CompletedTask;
-    }
-
-    private void CheckRemindersCallback(object? state)
-    {
-        var nowStr = DateTime.Now.ToString("HH:mm");
-        foreach (var (medName, reminderTime) in _scheduledReminders)
-        {
-            if (reminderTime == nowStr)
-            {
-                SendNotificationAsync("Medication Reminder", $"Time to take your {medName}!");
-            }
-        }
     }
 
     public Task ScheduleReminderAsync(Medication medication)
@@ -46,12 +44,6 @@ public class DefaultNotificationService : INotificationService, IDisposable
         return Task.CompletedTask;
     }
 
-    public Task CancelReminderAsync(string medicationId)
-    {
-        _scheduledReminders.TryRemove(medicationId, out _);
-        return Task.CompletedTask;
-    }
-
     public virtual Task SendNotificationAsync(string title, string message)
     {
         Debug.WriteLine($"[NOTIFICATION] {title}: {message}");
@@ -59,8 +51,15 @@ public class DefaultNotificationService : INotificationService, IDisposable
         return Task.CompletedTask;
     }
 
-    public void Dispose()
+    private void CheckRemindersCallback(object? state)
     {
-        _checkTimer?.Dispose();
+        var nowStr = DateTime.Now.ToString("HH:mm");
+        foreach (var (medName, reminderTime) in _scheduledReminders)
+        {
+            if (reminderTime == nowStr)
+            {
+                SendNotificationAsync("Medication Reminder", $"Time to take your {medName}!");
+            }
+        }
     }
 }

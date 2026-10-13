@@ -13,6 +13,13 @@ public partial class SettingsViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
 
+    public event Action? Cancelled;
+
+    public event Action? Saved;
+
+    [Reactive]
+    public partial bool ClearExistingDataOnImport { get; set; } = true;
+
     [Reactive]
     public partial string CurrentDatabasePath { get; set; } = string.Empty;
 
@@ -20,60 +27,29 @@ public partial class SettingsViewModel : ViewModelBase
     public partial string CustomPathInput { get; set; } = string.Empty;
 
     [Reactive]
-    public partial string StatusMessage { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial bool IsSuccess { get; set; }
-
-    [Reactive]
-    public partial bool ClearExistingDataOnImport { get; set; } = true;
-
-    [Reactive]
-    public partial bool IsImporting { get; set; }
-
-    [Reactive]
     public partial string ImportStatusMessage { get; set; } = string.Empty;
 
     [Reactive]
     public partial bool ImportSuccess { get; set; }
 
-    public Interaction<Unit, string?> OpenPillLoggerFileDialog { get; } = new();
+    [Reactive]
+    public partial bool IsImporting { get; set; }
+
+    [Reactive]
+    public partial bool IsSuccess { get; set; }
+
     public Interaction<Unit, string?> OpenDatabaseFileDialog { get; } = new();
 
-    public event Action? Saved;
-    public event Action? Cancelled;
+    public Interaction<Unit, string?> OpenPillLoggerFileDialog { get; } = new();
+
+    [Reactive]
+    public partial string StatusMessage { get; set; } = string.Empty;
 
     public SettingsViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
     {
         _dataStore = dataStore;
         CurrentDatabasePath = dataStore.DatabasePath;
         CustomPathInput = dataStore.DatabasePath;
-    }
-
-    [ReactiveCommand]
-    public async Task SavePathAsync()
-    {
-        if (string.IsNullOrWhiteSpace(CustomPathInput))
-        {
-            StatusMessage = "Path cannot be empty.";
-            IsSuccess = false;
-            return;
-        }
-
-        try
-        {
-            var trimmed = CustomPathInput.Trim();
-            await _dataStore.SetDatabasePathAsync(trimmed);
-            CurrentDatabasePath = _dataStore.DatabasePath;
-            StatusMessage = "Database location updated successfully! External sync enabled.";
-            IsSuccess = true;
-            Saved?.Invoke();
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Failed to set path: {ex.Message}";
-            IsSuccess = false;
-        }
     }
 
     [ReactiveCommand]
@@ -95,12 +71,10 @@ public partial class SettingsViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
-    public async Task ResetToDefaultPathAsync()
+    public void Cancel()
     {
-        var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var defaultPath = Path.Combine(appData, "DrTinyPaws", "drtinypaws.db");
-        CustomPathInput = defaultPath;
-        await SavePathAsync();
+        Cancelled?.Invoke();
+        HostScreen?.Router.NavigateBack.Execute().Subscribe();
     }
 
     [ReactiveCommand]
@@ -144,9 +118,37 @@ public partial class SettingsViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
-    public void Cancel()
+    public async Task ResetToDefaultPathAsync()
     {
-        Cancelled?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var defaultPath = Path.Combine(appData, "DrTinyPaws", "drtinypaws.db");
+        CustomPathInput = defaultPath;
+        await SavePathAsync();
+    }
+
+    [ReactiveCommand]
+    public async Task SavePathAsync()
+    {
+        if (string.IsNullOrWhiteSpace(CustomPathInput))
+        {
+            StatusMessage = "Path cannot be empty.";
+            IsSuccess = false;
+            return;
+        }
+
+        try
+        {
+            var trimmed = CustomPathInput.Trim();
+            await _dataStore.SetDatabasePathAsync(trimmed);
+            CurrentDatabasePath = _dataStore.DatabasePath;
+            StatusMessage = "Database location updated successfully! External sync enabled.";
+            IsSuccess = true;
+            Saved?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Failed to set path: {ex.Message}";
+            IsSuccess = false;
+        }
     }
 }
