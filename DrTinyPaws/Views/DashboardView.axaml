@@ -164,19 +164,6 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </StackPanel>
-
-                    <!--  Today Summary Pill  -->
-                    <Border
-                              Grid.Column="1"
-                              Padding="10,4"
-                              VerticalAlignment="Center"
-                              CornerRadius="12">
-                        <TextBlock FontSize="12" FontWeight="SemiBold">
-                            <Run Text="Today: " />
-                            <Run FontWeight="Bold" Text="{Binding TotalDosesToday}" />
-                            <Run Text=" doses logged" />
-                        </TextBlock>
-                    </Border>
                 </Grid>
             </Grid>
 
