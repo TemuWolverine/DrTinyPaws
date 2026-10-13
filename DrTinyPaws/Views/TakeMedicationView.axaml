@@ -1,125 +1,213 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:DrTinyPaws.ViewModels"
-             xmlns:models="using:DrTinyPaws.Models"
-             mc:Ignorable="d" d:DesignWidth="680" d:DesignHeight="700"
-             x:Class="DrTinyPaws.Views.TakeMedicationView"
-             x:DataType="vm:TakeMedicationViewModel">
+<UserControl
+          x:Class="DrTinyPaws.Views.TakeMedicationView"
+          xmlns="https://github.com/avaloniaui"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:models="using:DrTinyPaws.Models"
+          xmlns:vm="using:DrTinyPaws.ViewModels"
+          d:DesignHeight="700"
+          d:DesignWidth="680"
+          x:DataType="vm:TakeMedicationViewModel"
+          mc:Ignorable="d">
 
     <ScrollViewer>
-        <Border HorizontalAlignment="Center"
-                MaxWidth="680"
-                Margin="16,12"
-                CornerRadius="12"
-                BorderThickness="1"
-                Padding="24">
-            <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
-                <!-- Header -->
-                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,14">
-                    <Button Grid.Column="0" Command="{Binding CancelCommand}" Content="← Back" Margin="0,0,12,0" Padding="10,6" CornerRadius="6"/>
-                    <TextBlock Grid.Column="1" Text="Record Medication Intake" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
-                    <Button Grid.Column="2" Command="{Binding CancelCommand}" Content="✕" BorderThickness="0" FontSize="16"/>
-                </Grid>
+        <Grid Margin="16,12" RowDefinitions="Auto, Auto,Auto,*,Auto,Auto">
+            <!--  Header  -->
+            <Grid
+                      Grid.Row="0"
+                      Margin="0,0,0,14"
+                      ColumnDefinitions="Auto,*,Auto">
+                <Button
+                          Grid.Column="0"
+                          Margin="0,0,12,0"
+                          Padding="10,6"
+                          Command="{Binding CancelCommand}"
+                          Content="← Back"
+                          CornerRadius="6" />
+                <TextBlock
+                          Grid.Column="1"
+                          VerticalAlignment="Center"
+                          FontSize="18"
+                          FontWeight="Bold"
+                          Text="Record Medication Intake" />
+            </Grid>
 
-                <!-- Quick Presets -->
-                <StackPanel Grid.Row="1" Margin="0,0,0,14" IsVisible="{Binding AvailableGroups.Count}">
-                    <TextBlock Text="Apply Preset Group:" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                        <ItemsControl ItemsSource="{Binding AvailableGroups}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="6"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="models:DoseGroup">
-                                    <Button Command="{Binding $parent[UserControl].((vm:TakeMedicationViewModel)DataContext).ApplyGroupCommand}"
-                                            CommandParameter="{Binding}"
-                                            CornerRadius="12" Padding="10,4">
-                                        <TextBlock Text="{Binding Name}" FontSize="12" FontWeight="SemiBold"/>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
+            <!--  Date/time  -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,*">
+                <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                    <TextBlock
+                              Margin="0,0,0,4"
+                              FontWeight="SemiBold"
+                              Text="Date:" />
+                    <DatePicker HorizontalAlignment="Stretch" SelectedDate="{Binding TakenDate}" />
                 </StackPanel>
 
-                <!-- Medication Selection List with Steppers -->
-                <ScrollViewer Grid.Row="2" MaxHeight="320" Margin="0,0,0,14">
-                    <ItemsControl ItemsSource="{Binding MedItems}">
+                <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                    <TextBlock
+                              Margin="0,0,0,4"
+                              FontWeight="SemiBold"
+                              Text="Time:" />
+                    <TimePicker HorizontalAlignment="Stretch" SelectedTime="{Binding TakenTime}" />
+                </StackPanel>
+            </Grid>
+            <!--  Quick Presets  -->
+            <!--            <StackPanel
+                      Grid.Row="2"
+                      Margin="0,0,0,14"
+                      IsVisible="{Binding AvailableGroups.Count}">
+                <TextBlock
+                          Margin="0,0,0,6"
+                          FontWeight="SemiBold"
+                          Text="Apply Preset Group:" />
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding AvailableGroups}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="vm:TakeMedicationEntryItem">
-                                <Border Margin="0,0,0,6" Padding="10,6" CornerRadius="6" BorderThickness="1">
-                                    <Grid ColumnDefinitions="Auto,*,Auto">
-                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <Ellipse Width="10" Height="10" Fill="{Binding Medication.ColorHex, Converter={StaticResource HexToBrushConverter}}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding Medication.Name}" FontWeight="SemiBold" FontSize="13"/>
-                                            </StackPanel>
-                                            <TextBlock Text="{Binding Medication.Dosage}" FontSize="11" Margin="16,0,0,0"
-                                                       IsVisible="{Binding Medication.Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
-                                        </StackPanel>
-                                        <!-- Stepper -->
-                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                                            <Button Command="{Binding DecrementCommand}" Content="-" Padding="8,2" CornerRadius="4"/>
-                                            <TextBlock Text="{Binding Quantity}" Width="28" TextAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
-                                            <Button Command="{Binding IncrementCommand}" Content="+" Padding="8,2" CornerRadius="4"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
+                            <DataTemplate x:DataType="models:DoseGroup">
+                                <Button
+                                          Padding="10,4"
+                                          Command="{Binding $parent[UserControl].((vm:TakeMedicationViewModel)DataContext).ApplyGroupCommand}"
+                                          CommandParameter="{Binding}"
+                                          CornerRadius="12">
+                                    <TextBlock FontWeight="SemiBold" Text="{Binding Name}" />
+                                </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
+            </StackPanel>-->
 
-                <!-- Date & Time Section & Group Shortcut Option -->
-                <StackPanel Grid.Row="3" Spacing="10" Margin="0,0,0,16">
-                    <Grid ColumnDefinitions="*,*">
-                        <StackPanel Grid.Column="0" Margin="0,0,6,0">
-                            <TextBlock Text="Date:" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <DatePicker SelectedDate="{Binding TakenDate}" HorizontalAlignment="Stretch"/>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" Margin="6,0,0,0">
-                            <TextBlock Text="Time:" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TimePicker SelectedTime="{Binding TakenTime}" HorizontalAlignment="Stretch"/>
-                        </StackPanel>
-                    </Grid>
 
-                    <!-- Save as group option button -->
-                    <Button Command="{Binding ToggleCreateGroupCommand}"
-                            BorderThickness="0"
-                            Padding="0" HorizontalAlignment="Left">
-                        <TextBlock Text="★ Save this selection as a Group Preset / Shortcut" FontSize="12" TextDecorations="Underline"/>
-                    </Button>
+            <!--  Medication Selection List with Steppers  -->
+            <ScrollViewer
+                      Grid.Row="3"
+                      MaxHeight="320"
+                      Margin="0,0,0,14">
+                <ItemsControl ItemsSource="{Binding MedItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:TakeMedicationEntryItem">
+                            <Border
+                                      Margin="0,0,0,6"
+                                      Padding="10,6"
+                                      BorderThickness="1"
+                                      CornerRadius="6">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <CheckBox
+                                              Grid.Column="0"
+                                              Margin="0,0,8,0"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding IsSelected}" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <Ellipse
+                                                      Width="10"
+                                                      Height="10"
+                                                      VerticalAlignment="Center"
+                                                      Fill="{Binding Medication.ColorHex, Converter={StaticResource HexToBrushConverter}}" />
+                                            <TextBlock
+                                                      FontSize="13"
+                                                      FontWeight="SemiBold"
+                                                      Text="{Binding Medication.Name}" />
+                                        </StackPanel>
+                                        <TextBlock
+                                                  Margin="16,0,0,0"
+                                                  FontSize="11"
+                                                  IsVisible="{Binding Medication.Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                  Text="{Binding Medication.Dosage}" />
+                                    </StackPanel>
+                                    <!--  Stepper  -->
+                                    <StackPanel
+                                              Grid.Column="2"
+                                              VerticalAlignment="Center"
+                                              Orientation="Horizontal"
+                                              Spacing="4">
+                                        <Button
+                                                  Padding="8,2"
+                                                  Command="{Binding DecrementCommand}"
+                                                  Content="-"
+                                                  CornerRadius="4" />
+                                        <TextBlock
+                                                  Width="28"
+                                                  VerticalAlignment="Center"
+                                                  FontWeight="Bold"
+                                                  Text="{Binding Quantity}"
+                                                  TextAlignment="Center" />
+                                        <Button
+                                                  Padding="8,2"
+                                                  Command="{Binding IncrementCommand}"
+                                                  Content="+"
+                                                  CornerRadius="4" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
 
-                    <!-- Save group expansion panel -->
-                    <Border IsVisible="{Binding ShowCreateGroupPanel}"
-                            CornerRadius="6" Padding="10" Margin="0,4,0,0">
-                        <StackPanel Spacing="6">
-                            <TextBlock Text="Group Name (e.g. 'Morning Dose'):" FontSize="11" FontWeight="SemiBold"/>
-                            <TextBox Text="{Binding NewGroupName}" PlaceholderText="Preset name"/>
-                            <Button Content="Save Group Preset" Command="{Binding SaveSelectionAsGroupCommand}"
-                                    CornerRadius="4" Padding="10,4" HorizontalAlignment="Right"/>
-                        </StackPanel>
-                    </Border>
+            <!--  Group Shortcut Option  -->
+            <StackPanel
+                      Grid.Row="4"
+                      Margin="0,0,0,16"
+                      Spacing="10">
 
-                    <!-- Error message if any -->
-                    <TextBlock Text="{Binding ErrorMessage}" FontSize="12"
-                               IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
-                </StackPanel>
 
-                <!-- Footer Buttons -->
-                <Grid Grid.Row="4" ColumnDefinitions="*,Auto,Auto">
-                    <Button Grid.Column="1" Content="Cancel" Command="{Binding CancelCommand}"
-                            Margin="0,0,8,0" Padding="16,8" CornerRadius="6"/>
-                    <Button Grid.Column="2" Content="Record Dose" Command="{Binding RecordDoseCommand}"
-                            FontWeight="Bold"
-                            Padding="18,8" CornerRadius="6"/>
-                </Grid>
+                <!--  Save as group option button  -->
+                <Button
+                          Padding="0"
+                          HorizontalAlignment="Left"
+                          BorderThickness="0"
+                          Command="{Binding ToggleCreateGroupCommand}">
+                    <TextBlock Text="Save this selection as a Group Preset / Shortcut" TextDecorations="Underline" />
+                </Button>
+
+                <!--  Save group expansion panel  -->
+                <Border
+                          Margin="0,4,0,0"
+                          Padding="10"
+                          CornerRadius="6"
+                          IsVisible="{Binding ShowCreateGroupPanel}">
+                    <StackPanel Spacing="6">
+                        <TextBlock FontWeight="SemiBold" Text="Group Name (e.g. 'Morning Dose'):" />
+                        <TextBox PlaceholderText="Preset name" Text="{Binding NewGroupName}" />
+                        <Button
+                                  Padding="10,4"
+                                  HorizontalAlignment="Right"
+                                  Command="{Binding SaveSelectionAsGroupCommand}"
+                                  Content="Save Group Preset"
+                                  CornerRadius="4" />
+                    </StackPanel>
+                </Border>
+
+                <!--  Error message if any  -->
+                <TextBlock
+                          FontSize="12"
+                          IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                          Text="{Binding ErrorMessage}" />
+            </StackPanel>
+
+            <!--  Footer Buttons  -->
+            <Grid Grid.Row="5" ColumnDefinitions="*,Auto,Auto">
+                <Button
+                          Grid.Column="1"
+                          Margin="0,0,8,0"
+                          Padding="16,8"
+                          Command="{Binding CancelCommand}"
+                          Content="Cancel"
+                          CornerRadius="6" />
+                <Button
+                          Grid.Column="2"
+                          Padding="18,8"
+                          Command="{Binding RecordDoseCommand}"
+                          Content="Record Dose"
+                          CornerRadius="6"
+                          FontWeight="Bold" />
             </Grid>
-        </Border>
+        </Grid>
     </ScrollViewer>
 </UserControl>

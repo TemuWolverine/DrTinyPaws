@@ -1,115 +1,144 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:DrTinyPaws.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="680" d:DesignHeight="700"
-             x:Class="DrTinyPaws.Views.MedicationEditView"
-             x:DataType="vm:MedicationEditViewModel">
+<UserControl
+          x:Class="DrTinyPaws.Views.MedicationEditView"
+          xmlns="https://github.com/avaloniaui"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:vm="using:DrTinyPaws.ViewModels"
+          d:DesignHeight="700"
+          d:DesignWidth="680"
+          x:DataType="vm:MedicationEditViewModel"
+          mc:Ignorable="d">
 
-    <ScrollViewer>
-        <Border HorizontalAlignment="Center"
-                MaxWidth="680"
-                Margin="16,12"
-                CornerRadius="12"
-                BorderThickness="1"
-                Padding="24">
-            <StackPanel Spacing="12">
-                <!-- Header -->
-                <Grid ColumnDefinitions="Auto,*,Auto">
-                    <Button Grid.Column="0" Command="{Binding CancelCommand}" Content="← Back" Margin="0,0,12,0" Padding="10,6" CornerRadius="6"/>
-                    <TextBlock Grid.Column="1" Text="Define Medication" FontSize="18" FontWeight="Bold"
-                               VerticalAlignment="Center"
-                               IsVisible="{Binding !IsEditing}"/>
-                    <TextBlock Grid.Column="1" Text="Edit Medication" FontSize="18" FontWeight="Bold"
-                               VerticalAlignment="Center"
-                               IsVisible="{Binding IsEditing}"/>
-                    <Button Grid.Column="2" Command="{Binding CancelCommand}" Content="✕" BorderThickness="0"/>
-                </Grid>
+    <ScrollViewer Margin="16,12">
 
-                <!-- Name -->
-                <StackPanel Spacing="4">
-                    <TextBlock Text="Medication Name *" FontSize="12" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding Name}" PlaceholderText="e.g. Panadeine, Amoxicillin"/>
-                </StackPanel>
+        <StackPanel Spacing="12">
+            <!--  Header  -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button
+                          Grid.Column="0"
+                          Margin="0,0,12,0"
+                          Padding="10,6"
+                          Command="{Binding CancelCommand}"
+                          Content="← Back"
+                          CornerRadius="6" />
+                <TextBlock
+                          Grid.Column="1"
+                          VerticalAlignment="Center"
+                          FontSize="18"
+                          FontWeight="Bold"
+                          IsVisible="{Binding !IsEditing}"
+                          Text="Define Medication" />
+                <TextBlock
+                          Grid.Column="1"
+                          VerticalAlignment="Center"
+                          FontSize="18"
+                          FontWeight="Bold"
+                          IsVisible="{Binding IsEditing}"
+                          Text="Edit Medication" />
+            </Grid>
 
-                <!-- Dosage (Optional) -->
-                <StackPanel Spacing="4">
-                    <TextBlock Text="Dosage (optional)" FontSize="12" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding Dosage}" PlaceholderText="e.g. 500mg, 10ml, 1 tablet"/>
-                </StackPanel>
-
-                <!-- Colour Selection -->
-                <StackPanel Spacing="6">
-                    <TextBlock Text="Color Identifier *" FontSize="12" FontWeight="SemiBold"/>
-                    <ItemsControl ItemsSource="{Binding AvailableColors}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="x:String">
-                                <Button Command="{Binding $parent[UserControl].((vm:MedicationEditViewModel)DataContext).SelectColorCommand}"
-                                        CommandParameter="{Binding}"
-                                        Margin="3" Padding="2" BorderThickness="0">
-                                    <Border Width="28" Height="28" CornerRadius="14"
-                                            Background="{Binding Converter={StaticResource HexToBrushConverter}}"
-                                            BorderThickness="1"/>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <!-- Custom Hex preview -->
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="Selected:" FontSize="12" VerticalAlignment="Center"/>
-                        <Border Width="20" Height="20" CornerRadius="4" Background="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}"/>
-                        <TextBox Text="{Binding ColorHex}" Width="100" FontSize="12"/>
-                    </StackPanel>
-                </StackPanel>
-
-                <!-- Schedule (Optional) -->
-                <StackPanel Spacing="4">
-                    <TextBlock Text="Schedule (optional)" FontSize="12" FontWeight="SemiBold"/>
-                    <ComboBox ItemsSource="{Binding CommonSchedules}"
-                              SelectedItem="{Binding Schedule}"
-                              HorizontalAlignment="Stretch"/>
-                </StackPanel>
-
-                <!-- Reminder Time (Optional) -->
-                <StackPanel Spacing="4">
-                    <TextBlock Text="Reminder Time (optional, format HH:mm)" FontSize="12" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding ReminderTime}" PlaceholderText="e.g. 08:00 or 20:30"/>
-                </StackPanel>
-
-                <!-- Notes -->
-                <StackPanel Spacing="4">
-                    <TextBlock Text="Instructions / Notes (optional)" FontSize="12" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding Notes}" PlaceholderText="e.g. Take with food"/>
-                </StackPanel>
-
-                <!-- Error message -->
-                <TextBlock Text="{Binding ErrorMessage}" FontSize="12"
-                           IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
-
-                <!-- Action buttons -->
-                <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,10,0,0">
-                    <Button Grid.Column="1" Content="Cancel" Command="{Binding CancelCommand}"
-                            Margin="0,0,8,0" Padding="16,8" CornerRadius="6"/>
-                    <Button Grid.Column="2"
-                            IsVisible="{Binding !IsEditing}"
-                            Content="Save Medication"
-                            Command="{Binding SaveCommand}"
-                            FontWeight="Bold"
-                            Padding="16,8" CornerRadius="6"/>
-                    <Button Grid.Column="2"
-                            IsVisible="{Binding IsEditing}"
-                            Content="Update Medication"
-                            Command="{Binding SaveCommand}"
-                            FontWeight="Bold"
-                            Padding="16,8" CornerRadius="6"/>
-                </Grid>
+            <!--  Name  -->
+            <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold" Text="Medication Name *" />
+                <TextBox PlaceholderText="e.g. Panadeine, Amoxicillin" Text="{Binding Name}" />
             </StackPanel>
-        </Border>
+
+            <!--  Dosage (Optional)  -->
+            <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold" Text="Dosage (optional)" />
+                <TextBox PlaceholderText="e.g. 500mg, 10ml, 1 tablet" Text="{Binding Dosage}" />
+            </StackPanel>
+
+            <!--  Colour Selection  -->
+            <StackPanel Spacing="6">
+                <TextBlock FontWeight="SemiBold" Text="Color Identifier *" />
+                <ItemsControl ItemsSource="{Binding AvailableColors}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Button
+                                      Margin="3"
+                                      Padding="2"
+                                      BorderThickness="0"
+                                      Command="{Binding $parent[UserControl].((vm:MedicationEditViewModel)DataContext).SelectColorCommand}"
+                                      CommandParameter="{Binding}">
+                                <Border
+                                          Width="28"
+                                          Height="28"
+                                          Background="{Binding Converter={StaticResource HexToBrushConverter}}"
+                                          BorderThickness="1"
+                                          CornerRadius="14" />
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!--  Custom Hex preview  -->
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock VerticalAlignment="Center" Text="Selected:" />
+                    <Border
+                              Width="20"
+                              Height="20"
+                              Background="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}"
+                              CornerRadius="4" />
+                    <TextBox Width="100" Text="{Binding ColorHex}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!--  Schedule (Optional)  -->
+            <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold" Text="Schedule (optional)" />
+                <ComboBox
+                          HorizontalAlignment="Stretch"
+                          ItemsSource="{Binding CommonSchedules}"
+                          SelectedItem="{Binding Schedule}" />
+            </StackPanel>
+
+            <!--  Reminder Time (Optional)  -->
+            <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold" Text="Reminder Time (optional, format HH:mm)" />
+                <TextBox PlaceholderText="e.g. 08:00 or 20:30" Text="{Binding ReminderTime}" />
+            </StackPanel>
+
+            <!--  Notes  -->
+            <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold" Text="Instructions / Notes (optional)" />
+                <TextBox PlaceholderText="e.g. Take with food" Text="{Binding Notes}" />
+            </StackPanel>
+
+            <!--  Error message  -->
+            <TextBlock IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Text="{Binding ErrorMessage}" />
+
+            <!--  Action buttons  -->
+            <Grid Margin="0,10,0,0" ColumnDefinitions="*,Auto,Auto">
+                <Button
+                          Grid.Column="1"
+                          Margin="0,0,8,0"
+                          Padding="16,8"
+                          Command="{Binding CancelCommand}"
+                          Content="Cancel"
+                          CornerRadius="6" />
+                <Button
+                          Grid.Column="2"
+                          Padding="16,8"
+                          Command="{Binding SaveCommand}"
+                          Content="Save Medication"
+                          CornerRadius="6"
+                          FontWeight="Bold"
+                          IsVisible="{Binding !IsEditing}" />
+                <Button
+                          Grid.Column="2"
+                          Padding="16,8"
+                          Command="{Binding SaveCommand}"
+                          Content="Update Medication"
+                          CornerRadius="6"
+                          FontWeight="Bold"
+                          IsVisible="{Binding IsEditing}" />
+            </Grid>
+        </StackPanel>
     </ScrollViewer>
 </UserControl>

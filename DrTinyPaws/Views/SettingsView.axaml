@@ -10,93 +10,86 @@
           x:DataType="vm:SettingsViewModel"
           mc:Ignorable="d">
 
-    <ScrollViewer>
-        <Border
-                  MaxWidth="680"
-                  Margin="16,12"
-                  Padding="24"
-                  HorizontalAlignment="Center"
-                  BorderThickness="1"
-                  CornerRadius="12">
-            <StackPanel Spacing="18">
-                <!-- Header -->
-                <Grid ColumnDefinitions="Auto,*,Auto">
-                    <Button Grid.Column="0" Command="{Binding CancelCommand}" Content="← Back" Margin="0,0,12,0" Padding="10,6" CornerRadius="6"/>
-                    <TextBlock
-                              Grid.Column="1"
-                              VerticalAlignment="Center"
-                              FontSize="20"
-                              FontWeight="Bold"
-                              Text="Settings &amp; Data Sync" />
-                    <Button
-                              Grid.Column="2"
-                              BorderThickness="0"
-                              Command="{Binding CancelCommand}"
-                              Content="✕" />
-                </Grid>
-
-                <TextBlock Text="DrTinyPaws stores your medication data in a local SQLite database that is fully compatible with Syncthing, Nextcloud, Google Drive, or OneDrive desktop sync clients." TextWrapping="Wrap" />
-
-                <StackPanel Spacing="4">
-                    <TextBlock FontWeight="SemiBold" Text="Current Active Database File:" />
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBox
-                                  Margin="0,0,10,0"
-                                  Text="{Binding CustomPathInput}"
-                                  TextWrapping="Wrap" />
-                        <Button
-                                  Grid.Column="1"
-                                  Padding="10,6"
-                                  BorderThickness="1"
-                                  Command="{Binding ResetToDefaultPathCommand}"
-                                  Content="Browse"
-                                  CornerRadius="6" />
-                    </Grid>
-                </StackPanel>
-
-                <Border
-                          Padding="12"
-                          BorderThickness="1"
-                          CornerRadius="6">
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                                  FontSize="15"
-                                  FontWeight="Bold"
-                                  Text="How multi-device sync works:" />
-                        <TextBlock Text="1. Point DrTinyPaws on this computer and your other devices to a shared sync directory (e.g. your Syncthing or Nextcloud folder)." TextWrapping="Wrap" />
-                        <TextBlock Text="2. DrTinyPaws monitors the database file with automatic change detection. When another device syncs updates, the UI reloads instantly!" TextWrapping="Wrap" />
-                    </StackPanel>
-                </Border>
-
+    <ScrollViewer Margin="16,12">
+        <StackPanel Spacing="18">
+            <!--  Header  -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button
+                          Grid.Column="0"
+                          Margin="0,0,12,0"
+                          Padding="10,6"
+                          Command="{Binding CancelCommand}"
+                          Content="← Back"
+                          CornerRadius="6" />
                 <TextBlock
-                          FontWeight="SemiBold"
-                          IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                          Text="{Binding StatusMessage}" />
+                          Grid.Column="1"
+                          VerticalAlignment="Center"
+                          FontSize="20"
+                          FontWeight="Bold"
+                          Text="Settings &amp; Data Sync" />
+            </Grid>
 
-                <Grid Margin="0,10,0,0" ColumnDefinitions="*,Auto,Auto">
+            <TextBlock Text="DrTinyPaws stores your medication data in a local SQLite database that is fully compatible with Syncthing, Nextcloud, Google Drive, or OneDrive desktop sync clients." TextWrapping="Wrap" />
+
+            <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold" Text="Current Active Database File:" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox
+                              Margin="0,0,10,0"
+                              Text="{Binding CustomPathInput}"
+                              TextWrapping="Wrap" />
                     <Button
-                              Grid.Column="0"
+                              Grid.Column="1"
                               Padding="10,6"
                               BorderThickness="1"
                               Command="{Binding ResetToDefaultPathCommand}"
-                              Content="Reset to Default Path"
+                              Content="Browse"
                               CornerRadius="6" />
-                    <Button
-                              Grid.Column="1"
-                              Margin="0,0,8,0"
-                              Padding="14,8"
-                              Command="{Binding CancelCommand}"
-                              Content="Close"
-                              CornerRadius="6" />
-                    <Button
-                              Grid.Column="2"
-                              Padding="16,8"
-                              Command="{Binding SavePathCommand}"
-                              Content="Save Path"
-                              CornerRadius="6"
-                              FontWeight="Bold" />
                 </Grid>
             </StackPanel>
-        </Border>
+
+            <Border
+                      Padding="12"
+                      BorderThickness="1"
+                      CornerRadius="6">
+                <StackPanel Spacing="10">
+                    <TextBlock
+                              FontSize="15"
+                              FontWeight="Bold"
+                              Text="How multi-device sync works:" />
+                    <TextBlock Text="1. Point DrTinyPaws on this computer and your other devices to a shared sync directory (e.g. your Syncthing or Nextcloud folder)." TextWrapping="Wrap" />
+                    <TextBlock Text="2. DrTinyPaws monitors the database file with automatic change detection. When another device syncs updates, the UI reloads instantly!" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock
+                      FontWeight="SemiBold"
+                      IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                      Text="{Binding StatusMessage}" />
+
+            <Grid Margin="0,10,0,0" ColumnDefinitions="*,Auto,Auto">
+                <Button
+                          Grid.Column="0"
+                          Padding="10,6"
+                          BorderThickness="1"
+                          Command="{Binding ResetToDefaultPathCommand}"
+                          Content="Reset to Default Path"
+                          CornerRadius="6" />
+                <Button
+                          Grid.Column="1"
+                          Margin="0,0,8,0"
+                          Padding="14,8"
+                          Command="{Binding CancelCommand}"
+                          Content="Close"
+                          CornerRadius="6" />
+                <Button
+                          Grid.Column="2"
+                          Padding="16,8"
+                          Command="{Binding SavePathCommand}"
+                          Content="Save Path"
+                          CornerRadius="6"
+                          FontWeight="Bold" />
+            </Grid>
+        </StackPanel>
     </ScrollViewer>
 </UserControl>
