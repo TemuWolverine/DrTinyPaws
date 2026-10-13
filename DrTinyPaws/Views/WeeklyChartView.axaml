@@ -1,0 +1,97 @@
+﻿<UserControl
+          x:Class="DrTinyPaws.Views.WeeklyChartView"
+          xmlns="https://github.com/avaloniaui"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:vm="using:DrTinyPaws.ViewModels"
+          d:DesignHeight="220"
+          d:DesignWidth="800"
+          x:DataType="vm:WeeklyChartViewModel"
+          mc:Ignorable="d">
+
+    <Border
+              Padding="12,10,12,8"
+              BorderThickness="1"
+              CornerRadius="8">
+        <Grid RowDefinitions="Auto,*">
+            <!--  Week Navigation Toolbar  -->
+            <Grid
+                      Grid.Row="0"
+                      Margin="0,0,0,6"
+                      ColumnDefinitions="Auto,*,Auto">
+                <!--  Navigation Buttons  -->
+                <StackPanel
+                          Grid.Column="0"
+                          VerticalAlignment="Center"
+                          Orientation="Horizontal"
+                          Spacing="6">
+                    <Button
+                              Padding="8,4"
+                              Command="{Binding PreviousWeekCommand}"
+                              FontSize="12"
+                              FontWeight="SemiBold"
+                              ToolTip.Tip="Previous Week">
+                        ◀ Prev
+                    </Button>
+                    <Button
+                              Padding="8,4"
+                              Command="{Binding NextWeekCommand}"
+                              FontSize="12"
+                              FontWeight="SemiBold"
+                              ToolTip.Tip="Next Week">
+                        Next ▶
+                    </Button>
+                    <Button
+                              Padding="8,4"
+                              Command="{Binding CurrentWeekCommand}"
+                              FontSize="12"
+                              ToolTip.Tip="Go to Current Week">
+                        Today
+                    </Button>
+                </StackPanel>
+
+                <!--  Current Week Range Label  -->
+                <StackPanel
+                          Grid.Column="1"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Orientation="Horizontal"
+                          Spacing="8">
+                    <TextBlock
+                              VerticalAlignment="Center"
+                              FontSize="13"
+                              Text="Week of" />
+                    <TextBlock
+                              VerticalAlignment="Center"
+                              FontSize="14"
+                              FontWeight="Bold"
+                              Text="{Binding WeekLabel}" />
+                </StackPanel>
+
+                <!--  Week Summary Badge  -->
+                <Border
+                          Grid.Column="2"
+                          Padding="10,3"
+                          VerticalAlignment="Center"
+                          CornerRadius="12">
+                    <TextBlock FontSize="12" FontWeight="SemiBold">
+                        <Run Text="{Binding TotalWeeklyDoses}" />
+                        <Run Text="doses this week" />
+                    </TextBlock>
+                </Border>
+            </Grid>
+
+            <!--  7-Day Stacked Column Chart  -->
+            <lvc:CartesianChart
+                      Grid.Row="1"
+                      Height="165"
+                      MinHeight="140"
+                      LegendPosition="Hidden"
+                      Series="{Binding Series}"
+                      XAxes="{Binding XAxes}"
+                      YAxes="{Binding YAxes}" />
+        </Grid>
+    </Border>
+</UserControl>

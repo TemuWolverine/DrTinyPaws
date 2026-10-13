@@ -1,0 +1,22 @@
+﻿<Window
+          x:Class="DrTinyPaws.Views.MainWindow"
+          xmlns="https://github.com/avaloniaui"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:views="using:DrTinyPaws.Views"
+          xmlns:vm="using:DrTinyPaws.ViewModels"
+          Title="DrTinyPaws - Medication Intake Tracker"
+          Width="960"
+          Height="700"
+          MinWidth="650"
+          MinHeight="520"
+          d:DesignHeight="450"
+          d:DesignWidth="800"
+          ExtendClientAreaToDecorationsHint="True"
+          Icon="/Assets/avalonia-logo.ico"
+          WindowDecorations="Full"
+          WindowStartupLocation="CenterScreen"
+          mc:Ignorable="d">
+    <views:MainView Margin="0,25,0,0"/>
+</Window>

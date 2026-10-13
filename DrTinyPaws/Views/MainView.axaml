@@ -1,0 +1,380 @@
+<UserControl
+          x:Class="DrTinyPaws.Views.MainView"
+          xmlns="https://github.com/avaloniaui"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:models="using:DrTinyPaws.Models"
+          xmlns:views="using:DrTinyPaws.Views"
+          xmlns:vm="using:DrTinyPaws.ViewModels"
+          d:DesignHeight="700"
+          d:DesignWidth="950"
+          x:DataType="vm:MainViewModel"
+          mc:Ignorable="d">
+
+    <UserControl.Styles>
+        <Style Selector="Panel#PopupBackdrop">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+        <Style Selector="Panel#PopupBackdrop.active">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="IsHitTestVisible" Value="True" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid x:Name="RootGrid">
+        <!--  Main Background & Content  -->
+        <Grid
+                  x:Name="MainContentGrid"
+                  Margin="16,12,16,12"
+                  RowDefinitions="Auto,Auto,Auto,*">
+            <Grid.Effect>
+                <BlurEffect Radius="0">
+                    <BlurEffect.Transitions>
+                        <Transitions>
+                            <DoubleTransition
+                                      Easing="CubicEaseOut"
+                                      Property="Radius"
+                                      Duration="0:0:0.25" />
+                        </Transitions>
+                    </BlurEffect.Transitions>
+                </BlurEffect>
+            </Grid.Effect>
+
+            <!--  App Bar / Top Navigation  -->
+            <Grid
+                      Grid.Row="0"
+                      Margin="0,0,0,10"
+                      ColumnDefinitions="Auto,*,Auto">
+                <!--  Branding  -->
+                <StackPanel
+                          Grid.Column="0"
+                          VerticalAlignment="Center"
+                          Orientation="Horizontal"
+                          Spacing="10">
+                    <Border
+                              Width="36"
+                              Height="36"
+                              CornerRadius="8">
+                        <TextBlock
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  FontSize="20"
+                                  Text="💊" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock
+                                  FontSize="18"
+                                  FontWeight="Bold"
+                                  Text="DrTinyPaws" />
+                        <TextBlock FontSize="11" Text="Medication Intake Tracker" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!--  Navigation & Action Buttons  -->
+                <StackPanel
+                          Grid.Column="2"
+                          VerticalAlignment="Center"
+                          Orientation="Horizontal"
+                          Spacing="8">
+                    <Button
+                              Padding="14,8"
+                              Command="{Binding OpenTakeMedicationCommand}"
+                              CornerRadius="6"
+                              FontWeight="SemiBold">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock
+                                      FontSize="14"
+                                      FontWeight="Bold"
+                                      Text="+" />
+                            <TextBlock Text="Log Intake" />
+                        </StackPanel>
+                    </Button>
+                    <Button
+                              Padding="10,8"
+                              Command="{Binding OpenManageMedicationsCommand}"
+                              CornerRadius="6">
+                        Medications
+                    </Button>
+                    <Button
+                              Padding="10,8"
+                              Command="{Binding OpenManageGroupsCommand}"
+                              CornerRadius="6">
+                        Group Presets
+                    </Button>
+                    <Button
+                              Padding="10,8"
+                              Command="{Binding OpenSettingsCommand}"
+                              CornerRadius="6"
+                              ToolTip.Tip="Sync &amp; Settings">
+                        ⚙ Settings
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!--  In-App Notification / Reminder Banner  -->
+            <Border
+                      Grid.Row="1"
+                      Margin="0,0,0,10"
+                      Padding="12,8"
+                      BorderThickness="1"
+                      CornerRadius="6"
+                      IsVisible="{Binding ShowNotificationBanner}">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <TextBlock
+                              Grid.Column="0"
+                              VerticalAlignment="Center"
+                              FontSize="14"
+                              Text="🔔 " />
+                    <TextBlock
+                              Grid.Column="1"
+                              VerticalAlignment="Center"
+                              FontWeight="SemiBold"
+                              Text="{Binding NotificationBanner}" />
+                    <Button
+                              Grid.Column="2"
+                              Padding="6,2"
+                              BorderThickness="0"
+                              Command="{Binding DismissNotificationBannerCommand}"
+                              Content="✕" />
+                </Grid>
+            </Border>
+
+            <!--  1/3rd Vertical Real Estate: 7-Day Stacked Bar Graph (~200px)  -->
+            <Grid
+                      Grid.Row="2"
+                      Height="210"
+                      Margin="0,0,0,12">
+                <views:WeeklyChartView DataContext="{Binding ChartViewModel}" />
+            </Grid>
+
+            <!--  Bottom 2/3rds: Intakes Feed & Quick Presets  -->
+            <Grid Grid.Row="3" RowDefinitions="Auto,*">
+
+                <!--  Quick Presets Ribbon & Stats Header  -->
+                <Grid Grid.Row="0" Margin="0,0,0,8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <!--  Quick Presets  -->
+                        <StackPanel
+                                  Grid.Column="0"
+                                  VerticalAlignment="Center"
+                                  Orientation="Horizontal"
+                                  Spacing="6">
+                            <TextBlock
+                                      Margin="0,0,4,0"
+                                      VerticalAlignment="Center"
+                                      FontSize="12"
+                                      FontWeight="SemiBold"
+                                      Text="Quick Presets:" />
+                            <ItemsControl ItemsSource="{Binding DoseGroups}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:DoseGroup">
+                                        <Button
+                                                  Padding="10,4"
+                                                  Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).QuickTakeGroupCommand}"
+                                                  CommandParameter="{Binding}"
+                                                  CornerRadius="14"
+                                                  ToolTip.Tip="Log this group now at configured quantities">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock
+                                                          FontSize="12"
+                                                          FontWeight="SemiBold"
+                                                          Text="{Binding Name}" />
+                                                <TextBlock FontSize="10" Text="⚡" />
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        <!--  Today Summary Pill  -->
+                        <Border
+                                  Grid.Column="1"
+                                  Padding="10,4"
+                                  VerticalAlignment="Center"
+                                  CornerRadius="12">
+                            <TextBlock FontSize="12" FontWeight="SemiBold">
+                                <Run Text="Today: " />
+                                <Run FontWeight="Bold" Text="{Binding TotalDosesToday}" />
+                                <Run Text=" doses logged" />
+                            </TextBlock>
+                        </Border>
+                    </Grid>
+                </Grid>
+
+                <!--  Scrolling List of Intakes (Most recent at top)  -->
+                <Border
+                          Grid.Row="1"
+                          Padding="12,8"
+                          BorderThickness="1"
+                          CornerRadius="8">
+                    <Grid RowDefinitions="Auto,*">
+                        <Grid
+                                  Grid.Row="0"
+                                  Margin="4,4,4,8"
+                                  ColumnDefinitions="*,Auto">
+                            <TextBlock
+                                      Grid.Column="0"
+                                      FontSize="13"
+                                      FontWeight="Bold"
+                                      Text="Intake History (Most Recent First)" />
+                            <TextBlock
+                                      Grid.Column="1"
+                                      FontSize="11"
+                                      Text="{Binding RecentIntakes.Count, StringFormat='Showing {0} records'}" />
+                        </Grid>
+
+                        <!--  Empty State Notice  -->
+                        <StackPanel
+                                  Grid.Row="1"
+                                  Margin="0,40,0,40"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  IsVisible="{Binding !RecentIntakes.Count}"
+                                  Spacing="10">
+                            <TextBlock
+                                      HorizontalAlignment="Center"
+                                      FontSize="36"
+                                      Text="📋" />
+                            <TextBlock
+                                      HorizontalAlignment="Center"
+                                      FontSize="14"
+                                      FontWeight="SemiBold"
+                                      Text="No medication intakes recorded yet." />
+                            <Button
+                                      Padding="14,6"
+                                      HorizontalAlignment="Center"
+                                      Command="{Binding OpenTakeMedicationCommand}"
+                                      Content="+ Record First Intake"
+                                      CornerRadius="6" />
+                        </StackPanel>
+
+                        <!--  Scrollable Intake Feed  -->
+                        <ScrollViewer Grid.Row="1" IsVisible="{Binding RecentIntakes.Count}">
+                            <ItemsControl ItemsSource="{Binding RecentIntakes}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:MedicationIntake">
+                                        <Border
+                                                  Margin="0,0,0,6"
+                                                  Padding="12,10"
+                                                  BorderThickness="1"
+                                                  CornerRadius="8">
+                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+
+                                                <!--  Medication Color Indicator  -->
+                                                <Border
+                                                          Grid.Column="0"
+                                                          Width="12"
+                                                          Height="12"
+                                                          Margin="0,0,12,0"
+                                                          VerticalAlignment="Center"
+                                                          Background="{Binding MedicationColorHex, Converter={StaticResource HexToBrushConverter}}"
+                                                          CornerRadius="6" />
+
+                                                <!--  Medication Name & Dosage & Notes  -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <TextBlock
+                                                                  FontSize="14"
+                                                                  FontWeight="Bold"
+                                                                  Text="{Binding MedicationName}" />
+
+                                                        <!--  Dosage badge  -->
+                                                        <Border
+                                                                  Padding="6,1"
+                                                                  VerticalAlignment="Center"
+                                                                  CornerRadius="4"
+                                                                  IsVisible="{Binding MedicationDosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                                            <TextBlock FontSize="11" Text="{Binding MedicationDosage}" />
+                                                        </Border>
+                                                    </StackPanel>
+
+                                                    <TextBlock
+                                                              Margin="0,2,0,0"
+                                                              FontSize="11"
+                                                              IsVisible="{Binding Notes, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                              Text="{Binding Notes}" />
+                                                </StackPanel>
+
+                                                <!--  Count Badge & Timestamp  -->
+                                                <StackPanel
+                                                          Grid.Column="2"
+                                                          Margin="0,0,16,0"
+                                                          VerticalAlignment="Center"
+                                                          Orientation="Horizontal"
+                                                          Spacing="16">
+                                                    <!--  Quantity Badge  -->
+                                                    <Border
+                                                              Padding="10,3"
+                                                              VerticalAlignment="Center"
+                                                              CornerRadius="12">
+                                                        <TextBlock
+                                                                  FontSize="13"
+                                                                  FontWeight="Bold"
+                                                                  Text="{Binding Quantity, StringFormat='× {0}'}" />
+                                                    </Border>
+
+                                                    <!--  Timestamp  -->
+                                                    <TextBlock
+                                                              MinWidth="130"
+                                                              VerticalAlignment="Center"
+                                                              FontSize="12"
+                                                              Text="{Binding TakenAt, Converter={StaticResource DateTimeFormatConverter}}"
+                                                              TextAlignment="Right" />
+                                                </StackPanel>
+
+                                                <!--  Delete button  -->
+                                                <Button
+                                                          Grid.Column="3"
+                                                          Padding="6,4"
+                                                          BorderThickness="0"
+                                                          Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).DeleteIntakeCommand}"
+                                                          CommandParameter="{Binding}"
+                                                          ToolTip.Tip="Delete this intake entry">
+                                                    ✕
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <Panel
+                  x:Name="PopupBackdrop"
+                  Classes.active="{Binding IsPopupOpen}"
+                  PointerPressed="OnBackdropPointerPressed">
+            <Panel.Transitions>
+                <Transitions>
+                    <DoubleTransition
+                              Easing="CubicEaseOut"
+                              Property="Opacity"
+                              Duration="0:0:0.25" />
+                </Transitions>
+            </Panel.Transitions>
+            <Border Background="#99000000" />
+        </Panel>
+        <Popup
+                  x:Name="MainPopup"
+                  IsLightDismissEnabled="True"
+                  IsOpen="{Binding IsPopupOpen, Mode=TwoWay}"
+                  OverlayDismissEventPassThrough="False"
+                  Placement="Center"
+                  PlacementTarget="{Binding #RootGrid}">
+            <Grid Background="Black" Margin="20">
+                <ContentControl Content="{Binding PopupContent}" />
+            </Grid>
+        </Popup>
+    </Grid>
+</UserControl>

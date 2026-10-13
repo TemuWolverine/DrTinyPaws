@@ -1,0 +1,8 @@
+﻿<Solution>
+  <Project Path="DrTinyPaws.Android/DrTinyPaws.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="DrTinyPaws.Desktop/DrTinyPaws.Desktop.csproj" />
+  <Project Path="DrTinyPaws.Tests/DrTinyPaws.Tests.csproj" />
+  <Project Path="DrTinyPaws/DrTinyPaws.csproj" />
+</Solution>

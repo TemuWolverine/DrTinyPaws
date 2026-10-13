@@ -1,0 +1,55 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:DrTinyPaws.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="520" d:DesignHeight="520"
+             x:Class="DrTinyPaws.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+            Width="520" MaxHeight="520"
+            CornerRadius="12"
+            BorderThickness="1"
+            Padding="24">
+        <StackPanel Spacing="14">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Settings &amp; Data Sync" FontSize="18" FontWeight="Bold"/>
+                <Button Grid.Column="1" Command="{Binding CancelCommand}" Content="✕" BorderThickness="0"/>
+            </Grid>
+
+            <TextBlock Text="DrTinyPaws stores your medication data in a local SQLite database that is fully compatible with Syncthing, Nextcloud, Google Drive, or OneDrive desktop sync clients."
+                       TextWrapping="Wrap" FontSize="12"/>
+
+            <StackPanel Spacing="4">
+                <TextBlock Text="Current Active Database File:" FontSize="12" FontWeight="SemiBold"/>
+                <TextBox Text="{Binding CustomPathInput}" TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <Border CornerRadius="6" Padding="10">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="💡 How multi-device sync works:" FontSize="11" FontWeight="Bold"/>
+                    <TextBlock Text="1. Point DrTinyPaws on this computer and your other devices to a shared sync directory (e.g. your Syncthing or Nextcloud folder)."
+                               TextWrapping="Wrap" FontSize="11"/>
+                    <TextBlock Text="2. DrTinyPaws monitors the database file with automatic change detection. When another device syncs updates, the UI reloads instantly!"
+                               TextWrapping="Wrap" FontSize="11"/>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="{Binding StatusMessage}"
+                       FontSize="12" FontWeight="SemiBold"
+                       IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,10,0,0">
+                <Button Grid.Column="0" Content="Reset to Default Path" Command="{Binding ResetToDefaultPathCommand}"
+                        BorderThickness="1" CornerRadius="6" Padding="10,6" FontSize="11"/>
+                <Button Grid.Column="1" Content="Close"
+                        Command="{Binding CancelCommand}"
+                        Margin="0,0,8,0" Padding="14,8" CornerRadius="6"/>
+                <Button Grid.Column="2" Content="Save Path" Command="{Binding SavePathCommand}"
+                        FontWeight="Bold"
+                        Padding="16,8" CornerRadius="6"/>
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>
