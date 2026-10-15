@@ -1,4 +1,4 @@
-<UserControl
+<ContentPage Header="Record Medication Intake"
           x:Class="DrTinyPaws.Views.TakeMedicationView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -28,7 +28,7 @@
                 <TextBlock
                           Grid.Column="1"
                           VerticalAlignment="Center"
-                          FontSize="18"
+                          FontSize="{StaticResource HeaderFontSize}"
                           FontWeight="Bold"
                           Text="Record Medication Intake" />
             </Grid>
@@ -71,7 +71,7 @@
                             <DataTemplate x:DataType="models:DoseGroup">
                                 <Button
                                           Padding="10,4"
-                                          Command="{Binding $parent[UserControl].((vm:TakeMedicationViewModel)DataContext).ApplyGroupCommand}"
+                                          Command="{Binding $parent[ContentPage].((vm:TakeMedicationViewModel)DataContext).ApplyGroupCommand}"
                                           CommandParameter="{Binding}"
                                           CornerRadius="12">
                                     <TextBlock FontWeight="SemiBold" Text="{Binding Name}" />
@@ -110,13 +110,13 @@
                                                       VerticalAlignment="Center"
                                                       Fill="{Binding Medication.ColorHex, Converter={StaticResource HexToBrushConverter}}" />
                                             <TextBlock
-                                                      FontSize="13"
+                                                      FontSize="{StaticResource BodyTextFontSize}"
                                                       FontWeight="SemiBold"
                                                       Text="{Binding Medication.Name}" />
                                         </StackPanel>
                                         <TextBlock
                                                   Margin="16,0,0,0"
-                                                  FontSize="11"
+                                                  FontSize="{StaticResource SmallTextFontSize}"
                                                   IsVisible="{Binding Medication.Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                   Text="{Binding Medication.Dosage}" />
                                     </StackPanel>
@@ -186,7 +186,7 @@
 
                 <!--  Error message if any  -->
                 <TextBlock
-                          FontSize="12"
+                          FontSize="{StaticResource NormalTextFontSize}"
                           IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                           Text="{Binding ErrorMessage}" />
             </StackPanel>
@@ -210,4 +210,4 @@
             </Grid>
         </Grid>
     </ScrollViewer>
-</UserControl>
+</ContentPage>

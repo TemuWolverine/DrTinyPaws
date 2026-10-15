@@ -1,4 +1,4 @@
-<UserControl
+<ContentPage Header="Medications"
           x:Class="DrTinyPaws.Views.MedicationManagementView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -27,7 +27,7 @@
                 <TextBlock
                           Grid.Column="1"
                           VerticalAlignment="Center"
-                          FontSize="18"
+                          FontSize="{StaticResource HeaderFontSize}"
                           FontWeight="Bold"
                           Text="Manage Medications" />
             </Grid>
@@ -54,7 +54,7 @@
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <TextBlock
-                                                      FontSize="14"
+                                                      FontSize="{StaticResource MediumTextFontSize}"
                                                       FontWeight="Bold"
                                                       Text="{Binding Name}" />
                                             <Border
@@ -62,7 +62,7 @@
                                                       VerticalAlignment="Center"
                                                       CornerRadius="4"
                                                       IsVisible="{Binding Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                                                <TextBlock FontSize="11" Text="{Binding Dosage}" />
+                                                <TextBlock FontSize="{StaticResource SmallTextFontSize}" Text="{Binding Dosage}" />
                                             </Border>
                                         </StackPanel>
                                         <StackPanel
@@ -70,11 +70,11 @@
                                                   Orientation="Horizontal"
                                                   Spacing="10">
                                             <TextBlock
-                                                      FontSize="11"
+                                                      FontSize="{StaticResource SmallTextFontSize}"
                                                       IsVisible="{Binding Schedule, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                       Text="{Binding Schedule}" />
                                             <TextBlock
-                                                      FontSize="11"
+                                                      FontSize="{StaticResource SmallTextFontSize}"
                                                       IsVisible="{Binding ReminderTime, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                       Text="{Binding ReminderTime, StringFormat='⏰ {0}'}" />
                                         </StackPanel>
@@ -87,13 +87,13 @@
                                               Spacing="6">
                                         <Button
                                                   Padding="8,4"
-                                                  Command="{Binding $parent[UserControl].((vm:MedicationManagementViewModel)DataContext).RequestEditMedicationCommand}"
+                                                  Command="{Binding $parent[ContentPage].((vm:MedicationManagementViewModel)DataContext).RequestEditMedicationCommand}"
                                                   CommandParameter="{Binding}"
                                                   Content="Edit"
                                                   CornerRadius="4" />
                                         <Button
                                                   Padding="8,4"
-                                                  Command="{Binding $parent[UserControl].((vm:MedicationManagementViewModel)DataContext).DeleteMedicationCommand}"
+                                                  Command="{Binding $parent[ContentPage].((vm:MedicationManagementViewModel)DataContext).DeleteMedicationCommand}"
                                                   CommandParameter="{Binding}"
                                                   Content="Delete"
                                                   CornerRadius="4" />
@@ -125,4 +125,4 @@
             </Grid>
         </Grid>
     </ScrollViewer>
-</UserControl>
+</ContentPage>

@@ -9,7 +9,7 @@ using DrTinyPaws.ViewModels;
 
 namespace DrTinyPaws.Views;
 
-public partial class SettingsView : ReactiveUserControl<SettingsViewModel>
+public partial class SettingsView : ReactiveContentPage<SettingsViewModel>
 {
     public SettingsView()
     {

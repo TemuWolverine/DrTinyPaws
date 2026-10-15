@@ -1,4 +1,4 @@
-<UserControl
+<ContentPage Header="Settings &amp; Data Sync"
           x:Class="DrTinyPaws.Views.SettingsView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -24,7 +24,7 @@
                 <TextBlock
                           Grid.Column="1"
                           VerticalAlignment="Center"
-                          FontSize="20"
+                          FontSize="{StaticResource TitleFontSize}"
                           FontWeight="Bold"
                           Text="Settings &amp; Data Sync" />
             </Grid>
@@ -55,7 +55,7 @@
                       CornerRadius="6">
                 <StackPanel Spacing="10">
                     <TextBlock
-                              FontSize="15"
+                              FontSize="{StaticResource SectionHeaderFontSize}"
                               FontWeight="Bold"
                               Text="How multi-device sync works:" />
                     <TextBlock Text="1. Point DrTinyPaws on this computer and your other devices to a shared sync directory (e.g. your Syncthing or Nextcloud folder)." TextWrapping="Wrap" />
@@ -70,7 +70,7 @@
                       CornerRadius="6">
                 <StackPanel Spacing="10">
                     <TextBlock
-                              FontSize="15"
+                              FontSize="{StaticResource SectionHeaderFontSize}"
                               FontWeight="Bold"
                               Text="Import from Pill Logger" />
                     <TextBlock Text="Select a Pill Logger database file (.db) to import all pills, intake history, and routine presets into DrTinyPaws." TextWrapping="Wrap" />
@@ -132,4 +132,4 @@
             </Grid>
         </StackPanel>
     </ScrollViewer>
-</UserControl>
+</ContentPage>

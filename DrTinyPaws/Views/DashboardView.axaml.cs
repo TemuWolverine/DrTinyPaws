@@ -1,9 +1,8 @@
-using Avalonia.ReactiveUI;
 using DrTinyPaws.ViewModels;
 
 namespace DrTinyPaws.Views;
 
-public partial class DashboardView : ReactiveUserControl<DashboardViewModel>
+public partial class DashboardView : ReactiveContentPage<DashboardViewModel>
 {
     public DashboardView()
     {

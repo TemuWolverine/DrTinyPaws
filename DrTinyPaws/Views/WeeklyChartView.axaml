@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
           x:Class="DrTinyPaws.Views.WeeklyChartView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -30,7 +30,7 @@
                     <Button
                               Padding="8,4"
                               Command="{Binding PreviousWeekCommand}"
-                              FontSize="12"
+                              FontSize="{StaticResource NormalTextFontSize}"
                               FontWeight="SemiBold"
                               ToolTip.Tip="Previous Week">
                         ◀ Prev
@@ -38,7 +38,7 @@
                     <Button
                               Padding="8,4"
                               Command="{Binding NextWeekCommand}"
-                              FontSize="12"
+                              FontSize="{StaticResource NormalTextFontSize}"
                               FontWeight="SemiBold"
                               ToolTip.Tip="Next Week">
                         Next ▶
@@ -46,7 +46,7 @@
                     <Button
                               Padding="8,4"
                               Command="{Binding CurrentWeekCommand}"
-                              FontSize="12"
+                              FontSize="{StaticResource NormalTextFontSize}"
                               ToolTip.Tip="Go to Current Week">
                         Today
                     </Button>
@@ -61,11 +61,11 @@
                           Spacing="8">
                     <TextBlock
                               VerticalAlignment="Center"
-                              FontSize="13"
+                              FontSize="{StaticResource BodyTextFontSize}"
                               Text="Week of" />
                     <TextBlock
                               VerticalAlignment="Center"
-                              FontSize="14"
+                              FontSize="{StaticResource MediumTextFontSize}"
                               FontWeight="Bold"
                               Text="{Binding WeekLabel}" />
                 </StackPanel>

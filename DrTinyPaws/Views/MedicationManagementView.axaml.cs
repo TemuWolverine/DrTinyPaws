@@ -1,9 +1,8 @@
-using Avalonia.ReactiveUI;
 using DrTinyPaws.ViewModels;
 
 namespace DrTinyPaws.Views;
 
-public partial class MedicationManagementView : ReactiveUserControl<MedicationManagementViewModel>
+public partial class MedicationManagementView : ReactiveContentPage<MedicationManagementViewModel>
 {
     public MedicationManagementView()
     {

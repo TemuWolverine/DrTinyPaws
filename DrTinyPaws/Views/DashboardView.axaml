@@ -1,4 +1,4 @@
-<UserControl
+<ContentPage
           x:Class="DrTinyPaws.Views.DashboardView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,6 +7,7 @@
           xmlns:models="using:DrTinyPaws.Models"
           xmlns:views="using:DrTinyPaws.Views"
           xmlns:vm="using:DrTinyPaws.ViewModels"
+          Header="Dashboard"
           d:DesignHeight="700"
           d:DesignWidth="950"
           x:DataType="vm:DashboardViewModel"
@@ -18,37 +19,11 @@
                   Grid.Row="0"
                   Margin="0,0,0,10"
                   ColumnDefinitions="Auto,*,Auto">
-            <!--  Branding  -->
-            <StackPanel
-                      Grid.Column="0"
-                      VerticalAlignment="Center"
-                      Orientation="Horizontal"
-                      Spacing="10">
-                <Border
-                          Width="36"
-                          Height="36"
-                          CornerRadius="8">
-                    <TextBlock
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center"
-                              FontSize="20"
-                              Text="💊" />
-                </Border>
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock
-                              FontSize="18"
-                              FontWeight="Bold"
-                              Text="DrTinyPaws" />
-                    <TextBlock FontSize="11" Text="Medication Intake Tracker" />
-                </StackPanel>
-            </StackPanel>
-
-            <!--  Navigation & Action Buttons  -->
+            <!--  Primary Action Button  -->
             <StackPanel
                       Grid.Column="2"
                       VerticalAlignment="Center"
-                      Orientation="Horizontal"
-                      Spacing="8">
+                      Orientation="Horizontal">
                 <Button
                           Padding="14,8"
                           Command="{Binding OpenTakeMedicationCommand}"
@@ -56,30 +31,11 @@
                           FontWeight="SemiBold">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock
-                                  FontSize="14"
+                                  FontSize="{StaticResource MediumTextFontSize}"
                                   FontWeight="Bold"
                                   Text="+" />
                         <TextBlock Text="Log Intake" />
                     </StackPanel>
-                </Button>
-                <Button
-                          Padding="10,8"
-                          Command="{Binding OpenManageMedicationsCommand}"
-                          CornerRadius="6">
-                    Medications
-                </Button>
-                <Button
-                          Padding="10,8"
-                          Command="{Binding OpenManageGroupsCommand}"
-                          CornerRadius="6">
-                    Group Presets
-                </Button>
-                <Button
-                          Padding="10,8"
-                          Command="{Binding OpenSettingsCommand}"
-                          CornerRadius="6"
-                          ToolTip.Tip="Sync &amp; Settings">
-                    ⚙ Settings
                 </Button>
             </StackPanel>
         </Grid>
@@ -96,7 +52,7 @@
                 <TextBlock
                           Grid.Column="0"
                           VerticalAlignment="Center"
-                          FontSize="14"
+                          FontSize="{StaticResource MediumTextFontSize}"
                           Text="🔔 " />
                 <TextBlock
                           Grid.Column="1"
@@ -135,7 +91,7 @@
                         <TextBlock
                                   Margin="0,0,4,0"
                                   VerticalAlignment="Center"
-                                  FontSize="12"
+                                  FontSize="{StaticResource NormalTextFontSize}"
                                   FontWeight="SemiBold"
                                   Text="Quick Presets:" />
                         <ItemsControl ItemsSource="{Binding DoseGroups}">
@@ -148,16 +104,16 @@
                                 <DataTemplate x:DataType="models:DoseGroup">
                                     <Button
                                               Padding="10,4"
-                                              Command="{Binding $parent[UserControl].((vm:DashboardViewModel)DataContext).QuickTakeGroupCommand}"
+                                              Command="{Binding $parent[ContentPage].((vm:DashboardViewModel)DataContext).QuickTakeGroupCommand}"
                                               CommandParameter="{Binding}"
                                               CornerRadius="14"
                                               ToolTip.Tip="Log this group now at configured quantities">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <TextBlock
-                                                      FontSize="12"
+                                                      FontSize="{StaticResource NormalTextFontSize}"
                                                       FontWeight="SemiBold"
                                                       Text="{Binding Name}" />
-                                            <TextBlock FontSize="10" Text="⚡" />
+                                            <TextBlock FontSize="{StaticResource ExtraSmallTextFontSize}" Text="⚡" />
                                         </StackPanel>
                                     </Button>
                                 </DataTemplate>
@@ -180,12 +136,12 @@
                               ColumnDefinitions="*,Auto">
                         <TextBlock
                                   Grid.Column="0"
-                                  FontSize="13"
+                                  FontSize="{StaticResource BodyTextFontSize}"
                                   FontWeight="Bold"
                                   Text="Intake History (Most Recent First)" />
                         <TextBlock
                                   Grid.Column="1"
-                                  FontSize="11"
+                                  FontSize="{StaticResource SmallTextFontSize}"
                                   Text="{Binding RecentIntakes.Count, StringFormat='Showing {0} records'}" />
                     </Grid>
 
@@ -199,11 +155,11 @@
                               Spacing="10">
                         <TextBlock
                                   HorizontalAlignment="Center"
-                                  FontSize="36"
+                                  FontSize="{StaticResource DisplayFontSize}"
                                   Text="📋" />
                         <TextBlock
                                   HorizontalAlignment="Center"
-                                  FontSize="14"
+                                  FontSize="{StaticResource MediumTextFontSize}"
                                   FontWeight="SemiBold"
                                   Text="No medication intakes recorded yet." />
                         <Button
@@ -238,7 +194,7 @@
                                                 <TextBlock
                                                           HorizontalAlignment="Center"
                                                           VerticalAlignment="Center"
-                                                          FontSize="18"
+                                                          FontSize="{StaticResource HeaderFontSize}"
                                                           FontWeight="Bold"
                                                           Text="{Binding Quantity}" />
 
@@ -248,12 +204,12 @@
                                             <StackPanel Grid.Column="1" VerticalAlignment="Top">
                                                 <StackPanel Orientation="Vertical" Spacing="8">
                                                     <TextBlock
-                                                              FontSize="14"
+                                                              FontSize="{StaticResource MediumTextFontSize}"
                                                               FontWeight="Bold"
                                                               Text="{Binding MedicationName}" />
 
                                                     <TextBlock
-                                                              FontSize="11"
+                                                              FontSize="{StaticResource SmallTextFontSize}"
                                                               IsVisible="{Binding MedicationDosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                               Text="{Binding MedicationDosage}" />
                                                 </StackPanel>
@@ -270,7 +226,7 @@
                                                 <TextBlock
                                                           MinWidth="130"
                                                           VerticalAlignment="Center"
-                                                          FontSize="12"
+                                                          FontSize="{StaticResource NormalTextFontSize}"
                                                           Text="{Binding TakenAt, Converter={StaticResource DateTimeFormatConverter}}"
                                                           TextAlignment="Right" />
                                             </StackPanel>
@@ -280,7 +236,7 @@
                                                       Grid.Column="3"
                                                       Padding="6,4"
                                                       BorderThickness="0"
-                                                      Command="{Binding $parent[UserControl].((vm:DashboardViewModel)DataContext).DeleteIntakeCommand}"
+                                                      Command="{Binding $parent[ContentPage].((vm:DashboardViewModel)DataContext).DeleteIntakeCommand}"
                                                       CommandParameter="{Binding}"
                                                       ToolTip.Tip="Delete this intake entry">
                                                 ✕
@@ -295,4 +251,4 @@
             </Border>
         </Grid>
     </Grid>
-</UserControl>
+</ContentPage>

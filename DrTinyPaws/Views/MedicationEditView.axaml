@@ -1,4 +1,4 @@
-<UserControl
+<ContentPage Header="Medication Details"
           x:Class="DrTinyPaws.Views.MedicationEditView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -25,14 +25,14 @@
                 <TextBlock
                           Grid.Column="1"
                           VerticalAlignment="Center"
-                          FontSize="18"
+                          FontSize="{StaticResource HeaderFontSize}"
                           FontWeight="Bold"
                           IsVisible="{Binding !IsEditing}"
                           Text="Define Medication" />
                 <TextBlock
                           Grid.Column="1"
                           VerticalAlignment="Center"
-                          FontSize="18"
+                          FontSize="{StaticResource HeaderFontSize}"
                           FontWeight="Bold"
                           IsVisible="{Binding IsEditing}"
                           Text="Edit Medication" />
@@ -65,7 +65,7 @@
                                       Margin="3"
                                       Padding="2"
                                       BorderThickness="0"
-                                      Command="{Binding $parent[UserControl].((vm:MedicationEditViewModel)DataContext).SelectColorCommand}"
+                                      Command="{Binding $parent[ContentPage].((vm:MedicationEditViewModel)DataContext).SelectColorCommand}"
                                       CommandParameter="{Binding}">
                                 <Border
                                           Width="28"
@@ -141,4 +141,4 @@
             </Grid>
         </StackPanel>
     </ScrollViewer>
-</UserControl>
+</ContentPage>

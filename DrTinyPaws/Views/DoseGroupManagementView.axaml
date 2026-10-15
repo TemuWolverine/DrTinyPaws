@@ -1,4 +1,4 @@
-<UserControl
+<ContentPage Header="Group Presets"
           x:Class="DrTinyPaws.Views.DoseGroupManagementView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -27,7 +27,7 @@
                 <TextBlock
                           Grid.Column="1"
                           VerticalAlignment="Center"
-                          FontSize="18"
+                          FontSize="{StaticResource HeaderFontSize}"
                           FontWeight="Bold"
                           Text="Group Dose Presets" />
             </Grid>
@@ -47,11 +47,11 @@
                                     <Grid ColumnDefinitions="*,Auto">
                                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                             <TextBlock
-                                                      FontSize="14"
+                                                      FontSize="{StaticResource MediumTextFontSize}"
                                                       FontWeight="Bold"
                                                       Text="{Binding Name}" />
                                             <TextBlock
-                                                      FontSize="12"
+                                                      FontSize="{StaticResource NormalTextFontSize}"
                                                       IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                       Text="{Binding Description}" />
                                             <!--  Items summary  -->
@@ -67,7 +67,7 @@
                                                                   Margin="0,0,4,4"
                                                                   Padding="6,2"
                                                                   CornerRadius="4">
-                                                            <TextBlock FontSize="11">
+                                                            <TextBlock FontSize="{StaticResource SmallTextFontSize}">
                                                                 <Run FontWeight="Bold" Text="{Binding Quantity}" />
                                                                 <Run Text="× " />
                                                                 <Run Text="{Binding MedicationName}" />
@@ -84,13 +84,13 @@
                                                   Spacing="6">
                                             <Button
                                                       Padding="8,4"
-                                                      Command="{Binding $parent[UserControl].((vm:DoseGroupManagementViewModel)DataContext).EditGroupCommand}"
+                                                      Command="{Binding $parent[ContentPage].((vm:DoseGroupManagementViewModel)DataContext).EditGroupCommand}"
                                                       CommandParameter="{Binding}"
                                                       Content="Edit"
                                                       CornerRadius="4" />
                                             <Button
                                                       Padding="8,4"
-                                                      Command="{Binding $parent[UserControl].((vm:DoseGroupManagementViewModel)DataContext).DeleteGroupCommand}"
+                                                      Command="{Binding $parent[ContentPage].((vm:DoseGroupManagementViewModel)DataContext).DeleteGroupCommand}"
                                                       CommandParameter="{Binding}"
                                                       Content="Delete"
                                                       CornerRadius="4" />
@@ -106,20 +106,20 @@
                 <ScrollViewer MaxHeight="450" IsVisible="{Binding IsEditing}">
                     <StackPanel Spacing="10">
                         <TextBlock
-                                  FontSize="12"
+                                  FontSize="{StaticResource NormalTextFontSize}"
                                   FontWeight="SemiBold"
                                   Text="Preset Name *" />
                         <TextBox PlaceholderText="e.g. Morning Routine, Bedtime Dose" Text="{Binding GroupName}" />
 
                         <TextBlock
-                                  FontSize="12"
+                                  FontSize="{StaticResource NormalTextFontSize}"
                                   FontWeight="SemiBold"
                                   Text="Description (optional)" />
                         <TextBox PlaceholderText="Brief reminder description" Text="{Binding GroupDescription}" />
 
                         <TextBlock
                                   Margin="0,6,0,0"
-                                  FontSize="12"
+                                  FontSize="{StaticResource NormalTextFontSize}"
                                   FontWeight="SemiBold"
                                   Text="Select Medications &amp; Quantities:" />
                         <ItemsControl ItemsSource="{Binding MedicationSelection}">
@@ -136,10 +136,10 @@
                                                       IsChecked="{Binding IsIncluded}" />
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                 <TextBlock
-                                                          FontSize="13"
+                                                          FontSize="{StaticResource BodyTextFontSize}"
                                                           FontWeight="SemiBold"
                                                           Text="{Binding Medication.Name}" />
-                                                <TextBlock FontSize="11" Text="{Binding Medication.Dosage}" />
+                                                <TextBlock FontSize="{StaticResource SmallTextFontSize}" Text="{Binding Medication.Dosage}" />
                                             </StackPanel>
                                             <StackPanel
                                                       Grid.Column="2"
@@ -147,7 +147,7 @@
                                                       Spacing="4">
                                                 <TextBlock
                                                           VerticalAlignment="Center"
-                                                          FontSize="12"
+                                                          FontSize="{StaticResource NormalTextFontSize}"
                                                           Text="Qty:" />
                                                 <NumericUpDown
                                                           Width="90"
@@ -162,7 +162,7 @@
                         </ItemsControl>
 
                         <TextBlock
-                                  FontSize="12"
+                                  FontSize="{StaticResource NormalTextFontSize}"
                                   IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                   Text="{Binding ErrorMessage}" />
                     </StackPanel>
@@ -210,4 +210,4 @@
             </Grid>
         </Grid>
     </ScrollViewer>
-</UserControl>
+</ContentPage>

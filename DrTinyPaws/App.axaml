@@ -13,8 +13,21 @@
 
     <Application.Resources>
         <ResourceDictionary>
+            <!--  Converters  -->
             <converters:HexToBrushConverter x:Key="HexToBrushConverter" />
             <converters:DateTimeFormatConverter x:Key="DateTimeFormatConverter" />
+
+            <!--  Font Sizes  -->
+            <x:Double x:Key="DisplayFontSize">36</x:Double>
+            <x:Double x:Key="TitleFontSize">20</x:Double>
+            <x:Double x:Key="HeaderFontSize">18</x:Double>
+            <x:Double x:Key="SubHeaderFontSize">16</x:Double>
+            <x:Double x:Key="SectionHeaderFontSize">15</x:Double>
+            <x:Double x:Key="MediumTextFontSize">14</x:Double>
+            <x:Double x:Key="BodyTextFontSize">13</x:Double>
+            <x:Double x:Key="NormalTextFontSize">12</x:Double>
+            <x:Double x:Key="SmallTextFontSize">11</x:Double>
+            <x:Double x:Key="ExtraSmallTextFontSize">10</x:Double>
         </ResourceDictionary>
     </Application.Resources>
 
@@ -29,7 +42,7 @@
                           AltMedium="White"
                           AltMediumHigh="White"
                           AltMediumLow="White"
-                          BaseHigh="Black"
+                          BaseHigh="red"
                           BaseLow="#ffcccccc"
                           BaseMedium="#ff898989"
                           BaseMediumHigh="#ff5d5d5d"
@@ -53,7 +66,7 @@
                 <ColorPaletteResources
                           x:Key="Dark"
                           Accent="#ff0073cf"
-                          AltHigh="Black"
+                          AltHigh="#ff1c1c1c"
                           AltLow="Black"
                           AltMedium="Black"
                           AltMediumHigh="Black"
@@ -81,6 +94,13 @@
                           RegionColor="#ff212121" />
             </FluentTheme.Palettes>
         </FluentTheme>
+
+        <Style Selector="ContentPage">
+            <Setter Property="Background" Value="{DynamicResource SystemRegionBrush}" />
+        </Style>
+        <Style Selector="NavigationPage">
+            <Setter Property="Background" Value="{DynamicResource SystemRegionBrush}" />
+        </Style>
 
     </Application.Styles>
 </Application>
