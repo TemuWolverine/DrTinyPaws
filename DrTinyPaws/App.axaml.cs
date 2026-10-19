@@ -59,7 +59,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            System.IO.File.WriteAllText("D:\\Source\\NurseJoy\\error.txt", ex.ToString());
+            System.IO.File.WriteAllText("error.txt", ex.ToString());
             throw;
         }
     }
