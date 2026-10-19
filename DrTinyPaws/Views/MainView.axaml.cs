@@ -39,18 +39,10 @@ public partial class MainView : DrawerPage
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-
-        if (_topLevel != null)
-        {
-            _topLevel.ScalingChanged -= OnScalingChanged;
-            _topLevel = null;
-        }
-
-        if (_insetsManager != null)
-        {
-            _insetsManager.SafeAreaChanged -= OnSafeAreaChanged;
-            _insetsManager = null;
-        }
+        _topLevel?.ScalingChanged -= OnScalingChanged;
+        _topLevel = null;
+        _insetsManager?.SafeAreaChanged -= OnSafeAreaChanged;
+        _insetsManager = null;
     }
 
     private void OnScalingChanged(object? sender, System.EventArgs e)

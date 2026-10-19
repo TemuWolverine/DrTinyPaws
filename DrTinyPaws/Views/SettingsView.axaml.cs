@@ -16,7 +16,8 @@ public partial class SettingsView : ReactiveContentPage<SettingsViewModel>
         InitializeComponent();
         this.WhenActivated(disposables =>
         {
-            if (ViewModel == null) return;
+            if (ViewModel == null) 
+                return;
 
             ViewModel.OpenPillLoggerFileDialog.RegisterHandler(async interaction =>
             {
