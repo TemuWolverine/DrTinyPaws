@@ -130,7 +130,8 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         _databasePath = newPath;
         var configPath = GetConfigFilePath();
-        var json = JsonSerializer.Serialize(new { DatabasePath = _databasePath }, new JsonSerializerOptions { WriteIndented = true });
+        var escapedPath = _databasePath.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        var json = $"{{\n  \"DatabasePath\": \"{escapedPath}\"\n}}";
         await File.WriteAllTextAsync(configPath, json);
 
         SetupFileWatcher();
@@ -306,6 +307,41 @@ public class SqliteDataStore : IDataStore, IDisposable
             cmd.CommandText = includeInactive
                 ? "SELECT Id, Name, Dosage, ColorHex, Schedule, ReminderTime, Notes, IsActive, CreatedAt FROM Medications ORDER BY Name ASC"
                 : "SELECT Id, Name, Dosage, ColorHex, Schedule, ReminderTime, Notes, IsActive, CreatedAt FROM Medications WHERE IsActive = 1 ORDER BY Name ASC";
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            var list = new List<Medication>();
+            while (await reader.ReadAsync())
+            {
+                list.Add(new Medication
+                {
+                    Id = reader.GetString(0),
+                    Name = reader.GetString(1),
+                    Dosage = reader.IsDBNull(2) ? null : reader.GetString(2),
+                    ColorHex = reader.GetString(3),
+                    Schedule = reader.IsDBNull(4) ? null : reader.GetString(4),
+                    ReminderTime = reader.IsDBNull(5) ? null : reader.GetString(5),
+                    Notes = reader.IsDBNull(6) ? null : reader.GetString(6),
+                    IsActive = reader.GetInt32(7) == 1,
+                    CreatedAt = DateTime.Parse(reader.GetString(8))
+                });
+            }
+            return list;
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    public async Task<List<Medication>> GetLastAddedMedicationsAsync(int count = 4)
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            using var conn = CreateConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT Id, Name, Dosage, ColorHex, Schedule, ReminderTime, Notes, IsActive, CreatedAt FROM Medications WHERE IsActive = 1 ORDER BY CreatedAt DESC, rowid DESC LIMIT @Limit";
+            cmd.Parameters.AddWithValue("@Limit", count);
 
             using var reader = await cmd.ExecuteReaderAsync();
             var list = new List<Medication>();

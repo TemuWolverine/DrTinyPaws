@@ -8,10 +8,7 @@ public class MedicationIntake
     public string MedicationColorHex { get; set; } = string.Empty;
     public string? MedicationDosage { get; set; }
     public string MedicationId { get; set; } = string.Empty;
-
-    // Auxiliary fields populated when loading for display
     public string MedicationName { get; set; } = string.Empty;
-
     public string? Notes { get; set; }
     public int Quantity { get; set; } = 1;
     public DateTime TakenAt { get; set; } = DateTime.Now;

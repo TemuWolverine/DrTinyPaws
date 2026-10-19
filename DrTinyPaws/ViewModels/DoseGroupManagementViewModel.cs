@@ -1,45 +1,29 @@
+using DrTinyPaws.Models;
+using DrTinyPaws.Services;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
-using DrTinyPaws.Models;
-using DrTinyPaws.Services;
 
 namespace DrTinyPaws.ViewModels;
 
 public partial class DoseGroupManagementViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
-
     public event Action? Cancelled;
-
     public event Action? Saved;
-
-    [Reactive]
-    public partial string ErrorMessage { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string GroupColorHex { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string GroupDescription { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string GroupId { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string GroupName { get; set; } = string.Empty;
-
+    [Reactive] public partial string ErrorMessage { get; set; } = string.Empty;
+    [Reactive] public partial string GroupColorHex { get; set; } = string.Empty;
+    [Reactive] public partial string GroupDescription { get; set; } = string.Empty;
+    [Reactive] public partial string GroupId { get; set; } = string.Empty;
+    [Reactive] public partial string GroupName { get; set; } = string.Empty;
     public ObservableCollection<DoseGroup> Groups { get; } = [];
-
-    [Reactive]
-    public partial bool IsEditing { get; set; }
-
+    [Reactive] public partial bool IsEditing { get; set; }
     public ObservableCollection<DoseGroupItemEdit> MedicationSelection { get; } = [];
 
-    public DoseGroupManagementViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
+    public DoseGroupManagementViewModel(IDataStore dataStore, DrTinyPaws.Services.INavigationService? navigationService = null) : base(navigationService)
     {
         _dataStore = dataStore;
     }
@@ -48,13 +32,11 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
     public void CancelEdit()
     {
         if (IsEditing)
-        {
             IsEditing = false;
-        }
         else
         {
             Cancelled?.Invoke();
-            HostScreen?.Router.NavigateBack.Execute().Subscribe();
+            _ = NavigationService?.GoBackAsync();
         }
     }
 
@@ -62,7 +44,7 @@ public partial class DoseGroupManagementViewModel : ViewModelBase
     public void Close()
     {
         Cancelled?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+        _ = NavigationService?.GoBackAsync();
     }
 
     [ReactiveCommand]

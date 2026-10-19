@@ -1,7 +1,7 @@
+using DrTinyPaws.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DrTinyPaws.Models;
 
 namespace DrTinyPaws.Services;
 
@@ -29,6 +29,8 @@ public interface IDataStore
 
     // Medications
     Task<List<Medication>> GetMedicationsAsync(bool includeInactive = false);
+
+    Task<List<Medication>> GetLastAddedMedicationsAsync(int count = 4);
 
     Task<List<MedicationIntake>> GetRecentIntakesAsync(int limit = 200);
 

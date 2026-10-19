@@ -18,5 +18,5 @@
           WindowDecorations="Full"
           WindowStartupLocation="CenterScreen"
           mc:Ignorable="d">
-    <views:MainView Margin="0,25,0,0"/>
+    <views:MainView Margin="0,25,0,0" />
 </Window>

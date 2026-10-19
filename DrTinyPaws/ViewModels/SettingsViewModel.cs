@@ -1,51 +1,34 @@
+using DrTinyPaws.Services;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using System;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
-using DrTinyPaws.Services;
 
 namespace DrTinyPaws.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
-
     public event Action? Cancelled;
-
     public event Action? Saved;
+    [Reactive] public partial bool ClearExistingDataOnImport { get; set; } = true;
+    [Reactive] public partial string CurrentDatabasePath { get; set; } = string.Empty;
+    [Reactive] public partial string CustomPathInput { get; set; } = string.Empty;
+    [Reactive] public partial string ImportStatusMessage { get; set; } = string.Empty;
 
-    [Reactive]
-    public partial bool ClearExistingDataOnImport { get; set; } = true;
-
-    [Reactive]
-    public partial string CurrentDatabasePath { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string CustomPathInput { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string ImportStatusMessage { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial bool ImportSuccess { get; set; }
-
-    [Reactive]
-    public partial bool IsImporting { get; set; }
-
-    [Reactive]
-    public partial bool IsSuccess { get; set; }
-
+    [Reactive] public partial bool ImportSuccess { get; set; }
+    [Reactive] public partial bool IsImporting { get; set; }
+    [Reactive] public partial bool IsSuccess { get; set; }
     public Interaction<Unit, string?> OpenDatabaseFileDialog { get; } = new();
-
     public Interaction<Unit, string?> OpenPillLoggerFileDialog { get; } = new();
 
     [Reactive]
     public partial string StatusMessage { get; set; } = string.Empty;
 
-    public SettingsViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
+    public SettingsViewModel(IDataStore dataStore, DrTinyPaws.Services.INavigationService? navigationService = null) : base(navigationService)
     {
         _dataStore = dataStore;
         CurrentDatabasePath = dataStore.DatabasePath;
@@ -74,7 +57,7 @@ public partial class SettingsViewModel : ViewModelBase
     public void Cancel()
     {
         Cancelled?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+        _ = NavigationService?.GoBackAsync();
     }
 
     [ReactiveCommand]

@@ -12,8 +12,16 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        DrTinyPaws.Services.ServiceLocator.NotificationService = new DrTinyPaws.Desktop.Services.WindowsNotificationService();
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        try
+        {
+            DrTinyPaws.Services.ServiceLocator.NotificationService = new DrTinyPaws.Desktop.Services.WindowsNotificationService();
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            throw;
+        }
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

@@ -13,5 +13,4 @@ public class Medication
     public string? Notes { get; set; }
     public string? ReminderTime { get; set; }
     public string? Schedule { get; set; }
-    // Formatted as "HH:mm" e.g. "08:00"
 }

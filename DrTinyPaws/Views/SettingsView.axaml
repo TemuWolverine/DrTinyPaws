@@ -1,4 +1,4 @@
-<ContentPage Header="Settings &amp; Data Sync"
+<ContentPage
           x:Class="DrTinyPaws.Views.SettingsView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,19 +8,13 @@
           d:DesignHeight="650"
           d:DesignWidth="680"
           x:DataType="vm:SettingsViewModel"
+          Header="Settings &amp; Data Sync"
           mc:Ignorable="d">
 
     <ScrollViewer Margin="16,12">
         <StackPanel Spacing="18">
             <!--  Header  -->
             <Grid ColumnDefinitions="Auto,*,Auto">
-                <Button
-                          Grid.Column="0"
-                          Margin="0,0,12,0"
-                          Padding="10,6"
-                          Command="{Binding CancelCommand}"
-                          Content="← Back"
-                          CornerRadius="6" />
                 <TextBlock
                           Grid.Column="1"
                           VerticalAlignment="Center"

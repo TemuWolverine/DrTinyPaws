@@ -1,48 +1,30 @@
+using DrTinyPaws.Models;
+using DrTinyPaws.Services;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
-using DrTinyPaws.Models;
-using DrTinyPaws.Services;
 
 namespace DrTinyPaws.ViewModels;
 
 public partial class TakeMedicationViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
-
     public event Action? Cancelled;
-
     public event Action? Saved;
-
     public ObservableCollection<DoseGroup> AvailableGroups { get; } = [];
-
-    [Reactive]
-    public partial string ErrorMessage { get; set; } = string.Empty;
-
+    [Reactive] public partial string ErrorMessage { get; set; } = string.Empty;
     public ObservableCollection<TakeMedicationEntryItem> MedItems { get; } = [];
+    [Reactive] public partial string NewGroupDescription { get; set; } = string.Empty;
+    [Reactive] public partial string NewGroupName { get; set; } = string.Empty;
+    [Reactive] public partial string Notes { get; set; } = string.Empty;
+    [Reactive] public partial bool ShowCreateGroupPanel { get; set; }
+    [Reactive] public partial DateTimeOffset TakenDate { get; set; } = DateTimeOffset.Now;
+    [Reactive] public partial TimeSpan TakenTime { get; set; } = DateTime.Now.TimeOfDay;
 
-    [Reactive]
-    public partial string NewGroupDescription { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string NewGroupName { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial string Notes { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial bool ShowCreateGroupPanel { get; set; }
-
-    [Reactive]
-    public partial DateTimeOffset TakenDate { get; set; } = DateTimeOffset.Now;
-
-    [Reactive]
-    public partial TimeSpan TakenTime { get; set; } = DateTime.Now.TimeOfDay;
-
-    public TakeMedicationViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
+    public TakeMedicationViewModel(IDataStore dataStore, DrTinyPaws.Services.INavigationService? navigationService = null) : base(navigationService)
     {
         _dataStore = dataStore;
     }
@@ -73,16 +55,33 @@ public partial class TakeMedicationViewModel : ViewModelBase
     public void Cancel()
     {
         Cancelled?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+        _ = NavigationService?.GoBackAsync();
     }
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync(string? selectedMedicationId = null)
     {
         var meds = await _dataStore.GetMedicationsAsync(includeInactive: false);
         MedItems.Clear();
-        foreach (var med in meds)
+
+        if (!string.IsNullOrEmpty(selectedMedicationId))
         {
-            MedItems.Add(new TakeMedicationEntryItem(med, quantity: 1, isSelected: false));
+            var selectedMed = meds.FirstOrDefault(m => m.Id == selectedMedicationId);
+            if (selectedMed != null)
+            {
+                MedItems.Add(new TakeMedicationEntryItem(selectedMed, quantity: 1, isSelected: true));
+            }
+
+            foreach (var med in meds.Where(m => m.Id != selectedMedicationId))
+            {
+                MedItems.Add(new TakeMedicationEntryItem(med, quantity: 1, isSelected: false));
+            }
+        }
+        else
+        {
+            foreach (var med in meds)
+            {
+                MedItems.Add(new TakeMedicationEntryItem(med, quantity: 1, isSelected: false));
+            }
         }
 
         var groups = await _dataStore.GetDoseGroupsAsync();
@@ -117,7 +116,10 @@ public partial class TakeMedicationViewModel : ViewModelBase
 
         await _dataStore.LogIntakesAsync(intakes);
         Saved?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+        if (NavigationService != null)
+        {
+            await NavigationService.GoBackAsync();
+        }
     }
 
     [ReactiveCommand]

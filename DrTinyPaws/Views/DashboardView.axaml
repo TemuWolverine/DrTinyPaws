@@ -13,7 +13,8 @@
           x:DataType="vm:DashboardViewModel"
           mc:Ignorable="d">
 
-    <Grid Margin="16,12,16,12" RowDefinitions="Auto,Auto,Auto,*">
+    <Grid>
+        <Grid Margin="16,12,16,12" RowDefinitions="Auto,Auto,Auto,*">
         <!--  App Bar / Top Navigation  -->
         <Grid
                   Grid.Row="0"
@@ -250,5 +251,121 @@
                 </Grid>
             </Border>
         </Grid>
+    </Grid>
+
+        <!--  Floating Action Button (Quick Add)  -->
+        <Border
+                  Margin="0,0,24,24"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom"
+                  BoxShadow="0 4 12 0 #50000000"
+                  CornerRadius="28">
+            <Button
+                      x:Name="QuickAddFabButton"
+                      Width="56"
+                      Height="56"
+                      Padding="0"
+                      HorizontalContentAlignment="Center"
+                      VerticalContentAlignment="Center"
+                      Classes="accent fab"
+                      CornerRadius="28"
+                      ToolTip.Tip="Quick Add">
+                <Button.Flyout>
+                    <Flyout Placement="TopEdgeAlignedRight">
+                        <Border
+                                  MinWidth="220"
+                                  Padding="8"
+                                  Background="{DynamicResource SystemRegionBrush}"
+                                  BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                  BorderThickness="1"
+                                  CornerRadius="8">
+                            <StackPanel Spacing="4">
+                                <TextBlock
+                                          Margin="8,4,8,6"
+                                          FontSize="{StaticResource NormalTextFontSize}"
+                                          FontWeight="Bold"
+                                          Opacity="0.7"
+                                          Text="Quick Add" />
+                                <ItemsControl ItemsSource="{Binding LastAddedMedications}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Medication">
+                                            <Button
+                                                      Padding="10,8"
+                                                      HorizontalAlignment="Stretch"
+                                                      HorizontalContentAlignment="Left"
+                                                      Background="Transparent"
+                                                      BorderThickness="0"
+                                                      Click="OnQuickAddMenuItemClicked"
+                                                      Command="{Binding $parent[ItemsControl].((vm:DashboardViewModel)DataContext).QuickAddMedicationCommand}"
+                                                      CommandParameter="{Binding}"
+                                                      CornerRadius="6">
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                    <Ellipse
+                                                              Grid.Column="0"
+                                                              Width="12"
+                                                              Height="12"
+                                                              Margin="0,0,10,0"
+                                                              VerticalAlignment="Center"
+                                                              Fill="{Binding ColorHex, Converter={StaticResource HexToBrushConverter}}" />
+                                                    <TextBlock
+                                                              Grid.Column="1"
+                                                              VerticalAlignment="Center"
+                                                              FontSize="{StaticResource MediumTextFontSize}"
+                                                              FontWeight="SemiBold"
+                                                              Text="{Binding Name}" />
+                                                    <TextBlock
+                                                              Grid.Column="2"
+                                                              Margin="8,0,0,0"
+                                                              VerticalAlignment="Center"
+                                                              FontSize="{StaticResource SmallTextFontSize}"
+                                                              IsVisible="{Binding Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                              Opacity="0.7"
+                                                              Text="{Binding Dosage}" />
+                                                </Grid>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock
+                                          Margin="8,4"
+                                          FontStyle="Italic"
+                                          IsVisible="{Binding !LastAddedMedications.Count}"
+                                          Opacity="0.5"
+                                          Text="No medications yet" />
+                                <Separator Margin="0,4" />
+                                <Button
+                                          Padding="10,8"
+                                          HorizontalAlignment="Stretch"
+                                          HorizontalContentAlignment="Left"
+                                          Background="Transparent"
+                                          BorderThickness="0"
+                                          Click="OnQuickAddMenuItemClicked"
+                                          Command="{Binding QuickAddOtherCommand}"
+                                          CornerRadius="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <TextBlock
+                                                  VerticalAlignment="Center"
+                                                  FontSize="{StaticResource MediumTextFontSize}"
+                                                  Text="➕" />
+                                        <TextBlock
+                                                  VerticalAlignment="Center"
+                                                  FontSize="{StaticResource MediumTextFontSize}"
+                                                  FontWeight="SemiBold"
+                                                  Text="Other" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </Flyout>
+                </Button.Flyout>
+                <TextBlock
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Margin="0,-2,0,0"
+                          FontSize="28"
+                          FontWeight="Normal"
+                          Text="+" />
+            </Button>
+        </Border>
     </Grid>
 </ContentPage>

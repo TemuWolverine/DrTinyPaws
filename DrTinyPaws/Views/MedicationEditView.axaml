@@ -1,4 +1,4 @@
-<ContentPage Header="Medication Details"
+<ContentPage
           x:Class="DrTinyPaws.Views.MedicationEditView"
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,6 +8,7 @@
           d:DesignHeight="700"
           d:DesignWidth="680"
           x:DataType="vm:MedicationEditViewModel"
+          Header="Medication Details"
           mc:Ignorable="d">
 
     <ScrollViewer Margin="16,12">
@@ -15,13 +16,6 @@
         <StackPanel Spacing="12">
             <!--  Header  -->
             <Grid ColumnDefinitions="Auto,*,Auto">
-                <Button
-                          Grid.Column="0"
-                          Margin="0,0,12,0"
-                          Padding="10,6"
-                          Command="{Binding CancelCommand}"
-                          Content="← Back"
-                          CornerRadius="6" />
                 <TextBlock
                           Grid.Column="1"
                           VerticalAlignment="Center"

@@ -1,21 +1,23 @@
-using System;
-using System.Reactive;
-using System.Reactive.Linq;
+using DrTinyPaws.Services;
 using ReactiveUI;
+using System.Reactive;
 
 namespace DrTinyPaws.ViewModels;
 
-public abstract class ViewModelBase : ReactiveObject, IRoutableViewModel
+public abstract class ViewModelBase : ReactiveObject
 {
-    public IScreen HostScreen { get; protected set; }
-    public ReactiveCommand<Unit, IRoutableViewModel?> NavigateBackCommand { get; }
-    public virtual string? UrlPathSegment { get; protected set; }
+    public ReactiveCommand<Unit, Unit> NavigateBackCommand { get; }
+    public INavigationService? NavigationService { get; protected set; }
 
-    protected ViewModelBase(IScreen? hostScreen = null, string? urlPathSegment = null)
+    protected ViewModelBase(INavigationService? navigationService = null)
     {
-        HostScreen = hostScreen!;
-        UrlPathSegment = urlPathSegment ?? GetType().Name;
-        NavigateBackCommand = ReactiveCommand.CreateFromObservable(() =>
-            HostScreen != null ? HostScreen.Router.NavigateBack.Execute() : Observable.Return<IRoutableViewModel?>(null));
+        NavigationService = navigationService ?? ServiceLocator.NavigationService;
+        NavigateBackCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (NavigationService != null)
+            {
+                await NavigationService.GoBackAsync();
+            }
+        });
     }
 }

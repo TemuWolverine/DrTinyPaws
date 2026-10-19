@@ -1,26 +1,22 @@
+using DrTinyPaws.Models;
+using DrTinyPaws.Services;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
-using DrTinyPaws.Models;
-using DrTinyPaws.Services;
 
 namespace DrTinyPaws.ViewModels;
 
 public partial class MedicationManagementViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
-
     public event Action? AddMedicationRequested;
-
     public event Action? Closed;
-
     public event Action<Medication>? EditMedicationRequested;
-
     public ObservableCollection<Medication> Medications { get; } = [];
 
-    public MedicationManagementViewModel(IDataStore dataStore, IScreen? hostScreen = null) : base(hostScreen)
+    public MedicationManagementViewModel(IDataStore dataStore, DrTinyPaws.Services.INavigationService? navigationService = null) : base(navigationService)
     {
         _dataStore = dataStore;
 
@@ -37,7 +33,7 @@ public partial class MedicationManagementViewModel : ViewModelBase
     public void Close()
     {
         Closed?.Invoke();
-        HostScreen?.Router.NavigateBack.Execute().Subscribe();
+        _ = NavigationService?.GoBackAsync();
     }
 
     [ReactiveCommand]
@@ -63,22 +59,22 @@ public partial class MedicationManagementViewModel : ViewModelBase
     }
 
     [ReactiveCommand]
-    public void RequestAddMedication()
+    public async Task RequestAddMedicationAsync()
     {
         AddMedicationRequested?.Invoke();
-        if (HostScreen != null)
+        if (NavigationService != null)
         {
-            HostScreen.Router.Navigate.Execute(new MedicationEditViewModel(_dataStore, ServiceLocator.NotificationService, null, HostScreen)).Subscribe();
+            await NavigationService.NavigateToAsync(new MedicationEditViewModel(_dataStore, ServiceLocator.NotificationService, null, NavigationService));
         }
     }
 
     [ReactiveCommand]
-    public void RequestEditMedication(Medication medication)
+    public async Task RequestEditMedicationAsync(Medication medication)
     {
         EditMedicationRequested?.Invoke(medication);
-        if (HostScreen != null)
+        if (NavigationService != null)
         {
-            HostScreen.Router.Navigate.Execute(new MedicationEditViewModel(_dataStore, ServiceLocator.NotificationService, medication, HostScreen)).Subscribe();
+            await NavigationService.NavigateToAsync(new MedicationEditViewModel(_dataStore, ServiceLocator.NotificationService, medication, NavigationService));
         }
     }
 }

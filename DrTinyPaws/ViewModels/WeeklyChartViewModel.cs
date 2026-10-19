@@ -1,46 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
+using DrTinyPaws.Models;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using SkiaSharp;
-using DrTinyPaws.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DrTinyPaws.ViewModels;
 
 public partial class WeeklyChartViewModel : ViewModelBase
 {
     public event Action? WeekChanged;
+    [Reactive] public partial ISeries[] Series { get; set; } = [];
+    [Reactive] public partial int TotalWeeklyDoses { get; set; }
+    [Reactive] public partial string WeekLabel { get; set; } = string.Empty;
+    [Reactive] public partial DateTime WeekStartDate { get; set; }
+    [Reactive] public partial Axis[] XAxes { get; set; } = [];
+    [Reactive] public partial Axis[] YAxes { get; set; } = [];
 
-    [Reactive]
-    public partial ISeries[] Series { get; set; } = [];
-
-    [Reactive]
-    public partial int TotalWeeklyDoses { get; set; }
-
-    [Reactive]
-    public partial string WeekLabel { get; set; } = string.Empty;
-
-    [Reactive]
-    public partial DateTime WeekStartDate { get; set; }
-
-    [Reactive]
-    public partial Axis[] XAxes { get; set; } = [];
-
-    [Reactive]
-    public partial Axis[] YAxes { get; set; } = [];
-
-    public WeeklyChartViewModel(IScreen? hostScreen = null) : base(hostScreen)
+    public WeeklyChartViewModel(DrTinyPaws.Services.INavigationService? navigationService = null) 
+        : base(navigationService)
     {
-        // Start on Monday of current week
-        var now = DateTime.Now;
-        int diff = (7 + (int)now.DayOfWeek - (int)DayOfWeek.Monday) % 7;
-        WeekStartDate = now.Date.AddDays(-diff);
-        UpdateWeekLabel();
-        SetupAxes();
+        CurrentWeek();
     }
 
     [ReactiveCommand]

@@ -1,11 +1,11 @@
+using DrTinyPaws.Models;
+using DrTinyPaws.Services;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
-using DrTinyPaws.Models;
-using DrTinyPaws.Services;
 
 namespace DrTinyPaws.ViewModels;
 
@@ -13,34 +13,22 @@ public partial class DashboardViewModel : ViewModelBase
 {
     private readonly IDataStore _dataStore;
     private readonly INotificationService _notificationService;
-
-    [Reactive]
-    public partial WeeklyChartViewModel ChartViewModel { get; set; }
-
+    [Reactive] public partial WeeklyChartViewModel ChartViewModel { get; set; }
     public ObservableCollection<DoseGroup> DoseGroups { get; } = [];
-
+    public ObservableCollection<Medication> LastAddedMedications { get; } = [];
     public ObservableCollection<Medication> Medications { get; } = [];
-
-    [Reactive]
-    public partial string NotificationBanner { get; set; } = string.Empty;
-
+    [Reactive] public partial string NotificationBanner { get; set; } = string.Empty;
     public ObservableCollection<MedicationIntake> RecentIntakes { get; } = [];
+    [Reactive] public partial bool ShowNotificationBanner { get; set; }
+    [Reactive] public partial int TotalDosesThisWeek { get; set; }
+    [Reactive] public partial int TotalDosesToday { get; set; }
 
-    [Reactive]
-    public partial bool ShowNotificationBanner { get; set; }
-
-    [Reactive]
-    public partial int TotalDosesThisWeek { get; set; }
-
-    [Reactive]
-    public partial int TotalDosesToday { get; set; }
-
-    public DashboardViewModel(IScreen hostScreen, IDataStore dataStore, INotificationService notificationService)
-        : base(hostScreen, "Dashboard")
+    public DashboardViewModel(INavigationService? navigationService, IDataStore dataStore, INotificationService notificationService)
+        : base(navigationService)
     {
         _dataStore = dataStore;
         _notificationService = notificationService;
-        ChartViewModel = new WeeklyChartViewModel(hostScreen);
+        ChartViewModel = new WeeklyChartViewModel(navigationService);
 
         ChartViewModel.WeekChanged += () =>
         {
@@ -94,47 +82,80 @@ public partial class DashboardViewModel : ViewModelBase
     [ReactiveCommand]
     public async Task OpenManageGroupsAsync()
     {
-        var vm = new DoseGroupManagementViewModel(_dataStore, HostScreen);
+        if (NavigationService == null)
+            return;
+
+        var vm = new DoseGroupManagementViewModel(_dataStore, NavigationService);
         await vm.InitializeAsync();
-        HostScreen.Router.Navigate.Execute(vm).Subscribe();
+        await NavigationService.NavigateToAsync(vm);
     }
 
     [ReactiveCommand]
     public async Task OpenManageMedicationsAsync()
     {
-        var vm = new MedicationManagementViewModel(_dataStore, HostScreen);
+        if (NavigationService == null)
+            return;
+
+        var vm = new MedicationManagementViewModel(_dataStore, NavigationService);
         await vm.InitializeAsync();
-        HostScreen.Router.Navigate.Execute(vm).Subscribe();
+        await NavigationService.NavigateToAsync(vm);
     }
 
     [ReactiveCommand]
-    public void OpenSettings()
+    public async Task OpenSettingsAsync()
     {
-        var vm = new SettingsViewModel(_dataStore, HostScreen);
-        HostScreen.Router.Navigate.Execute(vm).Subscribe();
+        if (NavigationService == null)
+            return;
+
+        var vm = new SettingsViewModel(_dataStore, NavigationService);
+        await NavigationService.NavigateToAsync(vm);
     }
 
     [ReactiveCommand]
     public async Task OpenTakeMedicationAsync()
     {
-        var vm = new TakeMedicationViewModel(_dataStore, HostScreen);
+        if (NavigationService == null)
+            return;
+
+        var vm = new TakeMedicationViewModel(_dataStore, NavigationService);
         await vm.InitializeAsync();
-        HostScreen.Router.Navigate.Execute(vm).Subscribe();
+        await NavigationService.NavigateToAsync(vm);
+    }
+
+    [ReactiveCommand]
+    public async Task QuickAddMedicationAsync(Medication medication)
+    {
+        Console.WriteLine($"[DashboardViewModel] QuickAddMedicationAsync TRIGGERED for {medication?.Name} ({medication?.Id})");
+        if (medication == null || NavigationService == null)
+            return;
+
+        var vm = new TakeMedicationViewModel(_dataStore, NavigationService);
+        await vm.InitializeAsync(medication.Id);
+        await NavigationService.NavigateToAsync(vm);
+    }
+
+    [ReactiveCommand]
+    public async Task QuickAddOtherAsync()
+    {
+        Console.WriteLine("[DashboardViewModel] QuickAddOtherAsync TRIGGERED");
+        await OpenTakeMedicationAsync();
     }
 
     [ReactiveCommand]
     public async Task QuickTakeGroupAsync(DoseGroup group)
     {
-        if (group.Items.Count == 0) return;
+        if (group.Items.Count == 0)
+            return;
 
         var now = DateTime.Now;
-        var intakes = group.Items.Select(item => new MedicationIntake
-        {
-            MedicationId = item.MedicationId,
-            Quantity = item.Quantity,
-            TakenAt = now,
-            Notes = $"From group: {group.Name}"
-        }).ToList();
+        var intakes = group.Items.Select(item =>
+            new MedicationIntake
+            {
+                MedicationId = item.MedicationId,
+                Quantity = item.Quantity,
+                TakenAt = now,
+                Notes = $"From group: {group.Name}"
+            }).ToList();
 
         await _dataStore.LogIntakesAsync(intakes);
         await RefreshDataAsync();
@@ -151,6 +172,13 @@ public partial class DashboardViewModel : ViewModelBase
             {
                 await _notificationService.ScheduleReminderAsync(m);
             }
+        }
+
+        var lastAdded = await _dataStore.GetLastAddedMedicationsAsync(4);
+        LastAddedMedications.Clear();
+        foreach (var m in lastAdded)
+        {
+            LastAddedMedications.Add(m);
         }
 
         var groups = await _dataStore.GetDoseGroupsAsync();
