@@ -13,202 +13,205 @@
           Header="Record Medication Intake"
           mc:Ignorable="d">
 
-    <ScrollViewer>
-        <Grid Margin="16,12" RowDefinitions="Auto, Auto,Auto,*,Auto,Auto">
-            <!--  Date/time  -->
-            <Grid Grid.Row="0" ColumnDefinitions="1*,0.5*">
-                <StackPanel Grid.Column="0" Margin="0,0,6,0">
-                    <TextBlock
-                              Margin="0,0,0,4"
-                              FontWeight="SemiBold"
-                              Text="Date:" />
-                    <DatePicker HorizontalAlignment="Stretch" SelectedDate="{Binding TakenDate}" />
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Margin="6,0,0,0">
-                    <TextBlock
-                              Margin="0,0,0,4"
-                              FontWeight="SemiBold"
-                              Text="Time:" />
-                    <TimePicker HorizontalAlignment="Stretch" SelectedTime="{Binding TakenTime}" />
-                </StackPanel>
-            </Grid>
-
-            <TextBlock
-                      Grid.Row="1"
-                      Margin="0,10,0,5"
-                      Text="Choose Medication(s)" />
-            <!--  Medication Selection List with Steppers  -->
-            <ScrollViewer Grid.Row="3" Margin="0,0,0,14">
-                <ItemsControl ItemsSource="{Binding MedItems}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="vm:TakeMedicationEntryItem">
-                            <Border
-                                      Margin="0,0,0,6"
-                                      Padding="10,6"
-                                      Background="{DynamicResource MaterialPaperBrush}"
-                                      BorderBrush="{DynamicResource MaterialDividerBrush}"
-                                      BorderThickness="1"
-                                      CornerRadius="6">
-                                <Grid ColumnDefinitions="Auto,*,Auto">
-                                    <CheckBox
-                                              Grid.Column="0"
-                                              Margin="0,0,8,0"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding IsSelected}" />
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <Ellipse
-                                                      Width="10"
-                                                      Height="10"
-                                                      VerticalAlignment="Center"
-                                                      Fill="{Binding Medication.ColorHex, Converter={StaticResource HexToBrushConverter}}" />
-                                            <TextBlock
-                                                      FontSize="{StaticResource BodyTextFontSize}"
-                                                      FontWeight="SemiBold"
-                                                      Text="{Binding Medication.Name}" />
-                                        </StackPanel>
-                                        <TextBlock
-                                                  Margin="16,0,0,0"
-                                                  FontSize="{StaticResource SmallTextFontSize}"
-                                                  IsVisible="{Binding Medication.Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                  Text="{Binding Medication.Dosage}" />
-                                    </StackPanel>
-                                    <!--  Stepper  -->
-                                    <StackPanel
-                                              Grid.Column="2"
-                                              VerticalAlignment="Center"
-                                              Orientation="Horizontal"
-                                              Spacing="4">
-                                        <Button
-                                                  Padding="6,4"
-                                                  Command="{Binding DecrementCommand}"
-                                                  CornerRadius="4">
-                                            <materialIcons:MaterialIcon
-                                                      Width="14"
-                                                      Height="14"
-                                                      Kind="Minus" />
-                                        </Button>
-                                        <TextBlock
-                                                  Width="28"
-                                                  VerticalAlignment="Center"
-                                                  FontWeight="Bold"
-                                                  Text="{Binding Quantity}"
-                                                  TextAlignment="Center" />
-                                        <Button
-                                                  Padding="6,4"
-                                                  Command="{Binding IncrementCommand}"
-                                                  CornerRadius="4">
-                                            <materialIcons:MaterialIcon
-                                                      Width="14"
-                                                      Height="14"
-                                                      Kind="Plus" />
-                                        </Button>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-
-            <!--  Group Shortcut Option  -->
-            <StackPanel
-                      Grid.Row="4"
-                      Margin="0,0,0,16"
-                      Spacing="10">
-
-
-                <!--  Save as group option button  -->
-                <Button
-                          Padding="0"
-                          HorizontalAlignment="Left"
-                          BorderThickness="0"
-                          Classes="flat"
-                          Command="{Binding ToggleCreateGroupCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <materialIcons:MaterialIcon
-                                  Width="16"
-                                  Height="16"
-                                  VerticalAlignment="Center"
-                                  Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                  Kind="BookmarkPlusOutline" />
-                        <TextBlock
-                                  VerticalAlignment="Center"
-                                  Text="Save this selection as a Group Preset / Shortcut"
-                                  TextDecorations="Underline" />
-                    </StackPanel>
-                </Button>
-
-                <!--  Save group expansion panel  -->
-                <Border
-                          Margin="0,4,0,0"
-                          Padding="10"
-                          Background="{DynamicResource MaterialPaperBrush}"
-                          BorderBrush="{DynamicResource MaterialDividerBrush}"
-                          BorderThickness="1"
-                          CornerRadius="6"
-                          IsVisible="{Binding ShowCreateGroupPanel}">
-                    <StackPanel Spacing="6">
-                        <TextBlock FontWeight="SemiBold" Text="Group Name (e.g. 'Morning Dose'):" />
-                        <TextBox PlaceholderText="Preset name" Text="{Binding NewGroupName}" />
-                        <Button
-                                  Padding="10,4"
-                                  HorizontalAlignment="Right"
-                                  Command="{Binding SaveSelectionAsGroupCommand}"
-                                  CornerRadius="4">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <materialIcons:MaterialIcon
-                                          Width="16"
-                                          Height="16"
-                                          VerticalAlignment="Center"
-                                          Kind="ContentSaveOutline" />
-                                <TextBlock VerticalAlignment="Center" Text="Save Group Preset" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Border>
-
-                <!--  Error message if any  -->
+    <Grid Margin="16,12" RowDefinitions="Auto, Auto,*,Auto,Auto">
+        <!--  Date/time  -->
+        <Grid Grid.Row="0" ColumnDefinitions="1*,0.5*">
+            <StackPanel Grid.Column="0" Margin="0,0,6,0">
                 <TextBlock
-                          FontSize="{StaticResource NormalTextFontSize}"
-                          IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                          Text="{Binding ErrorMessage}" />
+                          Margin="0,0,0,4"
+                          FontWeight="SemiBold"
+                          Text="Date:" />
+                <DatePicker HorizontalAlignment="Stretch" SelectedDate="{Binding TakenDate}" />
             </StackPanel>
 
-            <!--  Footer Buttons  -->
-            <Grid Grid.Row="5" ColumnDefinitions="*,Auto,Auto">
-                <Button
-                          Grid.Column="1"
-                          Margin="0,0,8,0"
-                          Padding="16,8"
-                          Command="{Binding CancelCommand}"
-                          CornerRadius="6">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <materialIcons:MaterialIcon
-                                  Width="16"
-                                  Height="16"
-                                  VerticalAlignment="Center"
-                                  Kind="Close" />
-                        <TextBlock VerticalAlignment="Center" Text="Cancel" />
-                    </StackPanel>
-                </Button>
-                <Button
-                          Grid.Column="2"
-                          Padding="18,8"
-                          Command="{Binding RecordDoseCommand}"
-                          CornerRadius="6"
-                          FontWeight="Bold">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <materialIcons:MaterialIcon
-                                  Width="18"
-                                  Height="18"
-                                  VerticalAlignment="Center"
-                                  Kind="Check" />
-                        <TextBlock VerticalAlignment="Center" Text="Record Dose" />
-                    </StackPanel>
-                </Button>
-            </Grid>
+            <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                <TextBlock
+                          Margin="0,0,0,4"
+                          FontWeight="SemiBold"
+                          Text="Time:" />
+                <TimePicker HorizontalAlignment="Stretch" SelectedTime="{Binding TakenTime}" />
+            </StackPanel>
         </Grid>
-    </ScrollViewer>
+
+        <TextBlock
+                  Grid.Row="1"
+                  Margin="0,10,0,5"
+                  Text="Choose Medication(s)" />
+
+        <!--  Medication Selection List with Steppers  -->
+        <ScrollViewer
+                  Grid.Row="2"
+                  Margin="0,0,0,14"
+                  VerticalAlignment="Top">
+            <ItemsControl ItemsSource="{Binding MedItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:TakeMedicationEntryItem">
+                        <Border
+                                  Margin="0,0,0,6"
+                                  Padding="10,6"
+                                  Background="{DynamicResource MaterialPaperBrush}"
+                                  BorderBrush="{DynamicResource MaterialDividerBrush}"
+                                  BorderThickness="1"
+                                  CornerRadius="6">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <CheckBox
+                                          Grid.Column="0"
+                                          Margin="0,0,8,0"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding IsSelected}" />
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <Ellipse
+                                                  Width="10"
+                                                  Height="10"
+                                                  VerticalAlignment="Center"
+                                                  Fill="{Binding Medication.ColorHex, Converter={StaticResource HexToBrushConverter}}" />
+                                        <TextBlock
+                                                  FontSize="{StaticResource BodyTextFontSize}"
+                                                  FontWeight="SemiBold"
+                                                  Text="{Binding Medication.Name}" />
+                                    </StackPanel>
+                                    <TextBlock
+                                              Margin="16,0,0,0"
+                                              FontSize="{StaticResource SmallTextFontSize}"
+                                              IsVisible="{Binding Medication.Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                              Text="{Binding Medication.Dosage}" />
+                                </StackPanel>
+                                <!--  Stepper  -->
+                                <StackPanel
+                                          Grid.Column="2"
+                                          VerticalAlignment="Center"
+                                          Orientation="Horizontal"
+                                          Spacing="4">
+                                    <Button
+                                              Padding="6,4"
+                                              Command="{Binding DecrementCommand}"
+                                              CornerRadius="4">
+                                        <materialIcons:MaterialIcon
+                                                  Width="14"
+                                                  Height="14"
+                                                  Kind="Minus" />
+                                    </Button>
+                                    <TextBlock
+                                              Width="28"
+                                              VerticalAlignment="Center"
+                                              FontWeight="Bold"
+                                              Text="{Binding Quantity}"
+                                              TextAlignment="Center" />
+                                    <Button
+                                              Padding="6,4"
+                                              Command="{Binding IncrementCommand}"
+                                              CornerRadius="4">
+                                        <materialIcons:MaterialIcon
+                                                  Width="14"
+                                                  Height="14"
+                                                  Kind="Plus" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!--  Group Shortcut Option  -->
+        <StackPanel
+                  Grid.Row="3"
+                  Margin="0,0,0,16"
+                  Spacing="10">
+
+
+            <!--  Save as group option button  -->
+            <Button
+                      Padding="0"
+                      HorizontalAlignment="Left"
+                      BorderThickness="0"
+                      Classes="flat"
+                      Command="{Binding ToggleCreateGroupCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <materialIcons:MaterialIcon
+                              Width="16"
+                              Height="16"
+                              VerticalAlignment="Center"
+                              Foreground="{DynamicResource PrimaryHueMidBrush}"
+                              Kind="BookmarkPlusOutline" />
+                    <TextBlock
+                              VerticalAlignment="Center"
+                              Text="Save this selection as a Group Preset / Shortcut"
+                              TextDecorations="Underline" />
+                </StackPanel>
+            </Button>
+
+            <!--  Save group expansion panel  -->
+            <Border
+                      Margin="0,4,0,0"
+                      Padding="10"
+                      Background="{DynamicResource MaterialPaperBrush}"
+                      BorderBrush="{DynamicResource MaterialDividerBrush}"
+                      BorderThickness="1"
+                      CornerRadius="6"
+                      IsVisible="{Binding ShowCreateGroupPanel}">
+                <StackPanel Spacing="6">
+                    <TextBlock FontWeight="SemiBold" Text="Group Name (e.g. 'Morning Dose'):" />
+                    <TextBox PlaceholderText="Preset name" Text="{Binding NewGroupName}" />
+                    <Button
+                              Padding="10,4"
+                              HorizontalAlignment="Right"
+                              Command="{Binding SaveSelectionAsGroupCommand}"
+                              CornerRadius="4">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <materialIcons:MaterialIcon
+                                      Width="16"
+                                      Height="16"
+                                      VerticalAlignment="Center"
+                                      Kind="ContentSaveOutline" />
+                            <TextBlock VerticalAlignment="Center" Text="Save Group Preset" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!--  Error message if any  -->
+            <TextBlock
+                      FontSize="{StaticResource NormalTextFontSize}"
+                      IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                      Text="{Binding ErrorMessage}" />
+        </StackPanel>
+
+        <!--  Footer Buttons  -->
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto,Auto">
+            <Button
+                      Grid.Column="1"
+                      Margin="0,0,8,0"
+                      Padding="16,8"
+                      Command="{Binding CancelCommand}"
+                      CornerRadius="6">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <materialIcons:MaterialIcon
+                              Width="16"
+                              Height="16"
+                              VerticalAlignment="Center"
+                              Kind="Close" />
+                    <TextBlock VerticalAlignment="Center" Text="Cancel" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                      Grid.Column="2"
+                      Padding="18,8"
+                      Command="{Binding RecordDoseCommand}"
+                      CornerRadius="6"
+                      FontWeight="Bold">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <materialIcons:MaterialIcon
+                              Width="18"
+                              Height="18"
+                              VerticalAlignment="Center"
+                              Kind="Check" />
+                    <TextBlock VerticalAlignment="Center" Text="Record Dose" />
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
 </ContentPage>

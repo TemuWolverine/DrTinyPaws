@@ -6,17 +6,19 @@
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:views="using:DrTinyPaws.Views"
           xmlns:vm="using:DrTinyPaws.ViewModels"
-          Title="DrTinyPaws - Medication Intake Tracker"
+          Title="DrTinyPaws1234"
           Width="960"
           Height="700"
-          MinWidth="650"
+          MinWidth="450"
           MinHeight="520"
           d:DesignHeight="450"
           d:DesignWidth="800"
+          CanMaximize="False"
           ExtendClientAreaToDecorationsHint="True"
           Icon="/Assets/avalonia-logo.ico"
           WindowDecorations="Full"
+          
           WindowStartupLocation="CenterScreen"
           mc:Ignorable="d">
-    <views:MainView Margin="0,25,0,0" />
+    <views:MainView Margin="0,0,0,0" />
 </Window>

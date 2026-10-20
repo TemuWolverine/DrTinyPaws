@@ -12,6 +12,5 @@ public class DoseGroupItem
 
     // Auxiliary display properties
     public string MedicationName { get; set; } = string.Empty;
-
     public int Quantity { get; set; } = 1;
 }
