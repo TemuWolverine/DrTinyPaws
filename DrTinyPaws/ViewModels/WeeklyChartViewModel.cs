@@ -21,6 +21,16 @@ public partial class WeeklyChartViewModel : ViewModelBase
     [Reactive] public partial Axis[] XAxes { get; set; } = [];
     [Reactive] public partial Axis[] YAxes { get; set; } = [];
 
+    public static DateTime GetCurrentWeekStartDate()
+    {
+        var now = DateTime.Now;
+        int diff = (7 + (int)now.DayOfWeek - (int)DayOfWeek.Monday) % 7;
+        return now.Date.AddDays(-diff);
+    }
+
+    private IObservable<bool> CanNavigateNext =>
+        this.WhenAnyValue(x => x.WeekStartDate, date => date.Date < GetCurrentWeekStartDate());
+
     public WeeklyChartViewModel(DrTinyPaws.Services.INavigationService? navigationService = null) 
         : base(navigationService)
     {
@@ -30,17 +40,18 @@ public partial class WeeklyChartViewModel : ViewModelBase
     [ReactiveCommand]
     public void CurrentWeek()
     {
-        var now = DateTime.Now;
-        int diff = (7 + (int)now.DayOfWeek - (int)DayOfWeek.Monday) % 7;
-        WeekStartDate = now.Date.AddDays(-diff);
+        WeekStartDate = GetCurrentWeekStartDate();
         UpdateWeekLabel();
         SetupAxes();
         WeekChanged?.Invoke();
     }
 
-    [ReactiveCommand]
+    [ReactiveCommand(CanExecute = nameof(CanNavigateNext))]
     public void NextWeek()
     {
+        if (WeekStartDate.Date >= GetCurrentWeekStartDate())
+            return;
+
         WeekStartDate = WeekStartDate.AddDays(7);
         UpdateWeekLabel();
         SetupAxes();
