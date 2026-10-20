@@ -7,8 +7,8 @@ namespace DrTinyPaws.Views;
 
 public partial class MainView : DrawerPage
 {
-    private TopLevel? _topLevel;
     private IInsetsManager? _insetsManager;
+    private TopLevel? _topLevel;
 
     public MainView()
     {
@@ -45,17 +45,17 @@ public partial class MainView : DrawerPage
         _insetsManager = null;
     }
 
+    private void OnSafeAreaChanged(object? sender, SafeAreaChangedArgs e)
+    {
+        UpdateSafeArea(e.SafeAreaPadding);
+    }
+
     private void OnScalingChanged(object? sender, System.EventArgs e)
     {
         if (_insetsManager != null)
         {
             UpdateSafeArea(_insetsManager.SafeAreaPadding);
         }
-    }
-
-    private void OnSafeAreaChanged(object? sender, SafeAreaChangedArgs e)
-    {
-        UpdateSafeArea(e.SafeAreaPadding);
     }
 
     private void UpdateSafeArea(Thickness rawPadding)

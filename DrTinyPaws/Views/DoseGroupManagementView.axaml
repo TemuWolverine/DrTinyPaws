@@ -3,6 +3,7 @@
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:models="using:DrTinyPaws.Models"
           xmlns:vm="using:DrTinyPaws.ViewModels"
@@ -36,6 +37,8 @@
                                 <Border
                                           Margin="0,0,0,8"
                                           Padding="12,10"
+                                          Background="{DynamicResource MaterialPaperBrush}"
+                                          BorderBrush="{DynamicResource MaterialDividerBrush}"
                                           BorderThickness="1"
                                           CornerRadius="8">
                                     <Grid ColumnDefinitions="*,Auto">
@@ -60,6 +63,7 @@
                                                         <Border
                                                                   Margin="0,0,4,4"
                                                                   Padding="6,2"
+                                                                  Background="{DynamicResource MaterialDividerBrush}"
                                                                   CornerRadius="4">
                                                             <TextBlock FontSize="{StaticResource SmallTextFontSize}">
                                                                 <Run FontWeight="Bold" Text="{Binding Quantity}" />
@@ -80,14 +84,22 @@
                                                       Padding="8,4"
                                                       Command="{Binding $parent[ContentPage].((vm:DoseGroupManagementViewModel)DataContext).EditGroupCommand}"
                                                       CommandParameter="{Binding}"
-                                                      Content="Edit"
-                                                      CornerRadius="4" />
+                                                      CornerRadius="4">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <materialIcons:MaterialIcon Width="14" Height="14" VerticalAlignment="Center" Kind="Pencil" />
+                                                    <TextBlock VerticalAlignment="Center" Text="Edit" />
+                                                </StackPanel>
+                                            </Button>
                                             <Button
                                                       Padding="8,4"
                                                       Command="{Binding $parent[ContentPage].((vm:DoseGroupManagementViewModel)DataContext).DeleteGroupCommand}"
                                                       CommandParameter="{Binding}"
-                                                      Content="Delete"
-                                                      CornerRadius="4" />
+                                                      CornerRadius="4">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <materialIcons:MaterialIcon Width="14" Height="14" VerticalAlignment="Center" Kind="DeleteOutline" />
+                                                    <TextBlock VerticalAlignment="Center" Text="Delete" />
+                                                </StackPanel>
+                                            </Button>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -122,6 +134,9 @@
                                     <Border
                                               Margin="0,0,0,4"
                                               Padding="8,4"
+                                              Background="{DynamicResource MaterialPaperBrush}"
+                                              BorderBrush="{DynamicResource MaterialDividerBrush}"
+                                              BorderThickness="1"
                                               CornerRadius="4">
                                         <Grid ColumnDefinitions="Auto,*,Auto">
                                             <CheckBox
@@ -172,35 +187,51 @@
                           Grid.Column="0"
                           Padding="14,8"
                           Command="{Binding StartNewGroupCommand}"
-                          Content="+ New Preset Group"
                           CornerRadius="6"
                           FontWeight="SemiBold"
-                          IsVisible="{Binding !IsEditing}" />
+                          IsVisible="{Binding !IsEditing}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="Plus" />
+                        <TextBlock VerticalAlignment="Center" Text="New Preset Group" />
+                    </StackPanel>
+                </Button>
 
                 <Button
                           Grid.Column="1"
                           Margin="0,0,8,0"
                           Padding="14,8"
                           Command="{Binding CancelEditCommand}"
-                          Content="Cancel"
                           CornerRadius="6"
-                          IsVisible="{Binding IsEditing}" />
+                          IsVisible="{Binding IsEditing}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="Close" />
+                        <TextBlock VerticalAlignment="Center" Text="Cancel" />
+                    </StackPanel>
+                </Button>
                 <Button
                           Grid.Column="2"
                           Padding="16,8"
                           Command="{Binding SaveGroupCommand}"
-                          Content="Save Group"
                           CornerRadius="6"
                           FontWeight="Bold"
-                          IsVisible="{Binding IsEditing}" />
+                          IsVisible="{Binding IsEditing}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="ContentSaveOutline" />
+                        <TextBlock VerticalAlignment="Center" Text="Save Group" />
+                    </StackPanel>
+                </Button>
 
                 <Button
                           Grid.Column="2"
                           Padding="16,8"
                           Command="{Binding CloseCommand}"
-                          Content="Close"
                           CornerRadius="6"
-                          IsVisible="{Binding !IsEditing}" />
+                          IsVisible="{Binding !IsEditing}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="Check" />
+                        <TextBlock VerticalAlignment="Center" Text="Close" />
+                    </StackPanel>
+                </Button>
             </Grid>
         </Grid>
     </ScrollViewer>

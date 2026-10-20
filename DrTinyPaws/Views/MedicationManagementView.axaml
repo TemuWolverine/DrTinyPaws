@@ -3,6 +3,7 @@
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:models="using:DrTinyPaws.Models"
           xmlns:vm="using:DrTinyPaws.ViewModels"
@@ -33,6 +34,8 @@
                             <Border
                                       Margin="0,0,0,8"
                                       Padding="12,8"
+                                      Background="{DynamicResource MaterialPaperBrush}"
+                                      BorderBrush="{DynamicResource MaterialDividerBrush}"
                                       BorderThickness="1"
                                       CornerRadius="8">
                                 <Grid ColumnDefinitions="Auto,*,Auto">
@@ -54,6 +57,7 @@
                                             <Border
                                                       Padding="6,1"
                                                       VerticalAlignment="Center"
+                                                      Background="{DynamicResource MaterialDividerBrush}"
                                                       CornerRadius="4"
                                                       IsVisible="{Binding Dosage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                                                 <TextBlock FontSize="{StaticResource SmallTextFontSize}" Text="{Binding Dosage}" />
@@ -67,10 +71,10 @@
                                                       FontSize="{StaticResource SmallTextFontSize}"
                                                       IsVisible="{Binding Schedule, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                       Text="{Binding Schedule}" />
-                                            <TextBlock
-                                                      FontSize="{StaticResource SmallTextFontSize}"
-                                                      IsVisible="{Binding ReminderTime, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                      Text="{Binding ReminderTime, StringFormat='⏰ {0}'}" />
+                                            <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding ReminderTime, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                                <materialIcons:MaterialIcon Width="14" Height="14" VerticalAlignment="Center" Kind="ClockOutline" />
+                                                <TextBlock FontSize="{StaticResource SmallTextFontSize}" VerticalAlignment="Center" Text="{Binding ReminderTime}" />
+                                            </StackPanel>
                                         </StackPanel>
                                     </StackPanel>
 
@@ -83,14 +87,22 @@
                                                   Padding="8,4"
                                                   Command="{Binding $parent[ContentPage].((vm:MedicationManagementViewModel)DataContext).RequestEditMedicationCommand}"
                                                   CommandParameter="{Binding}"
-                                                  Content="Edit"
-                                                  CornerRadius="4" />
+                                                  CornerRadius="4">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <materialIcons:MaterialIcon Width="14" Height="14" VerticalAlignment="Center" Kind="Pencil" />
+                                                <TextBlock VerticalAlignment="Center" Text="Edit" />
+                                            </StackPanel>
+                                        </Button>
                                         <Button
                                                   Padding="8,4"
                                                   Command="{Binding $parent[ContentPage].((vm:MedicationManagementViewModel)DataContext).DeleteMedicationCommand}"
                                                   CommandParameter="{Binding}"
-                                                  Content="Delete"
-                                                  CornerRadius="4" />
+                                                  CornerRadius="4">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <materialIcons:MaterialIcon Width="14" Height="14" VerticalAlignment="Center" Kind="DeleteOutline" />
+                                                <TextBlock VerticalAlignment="Center" Text="Delete" />
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
                                 </Grid>
                             </Border>
@@ -107,15 +119,23 @@
                           Grid.Column="0"
                           Padding="14,8"
                           Command="{Binding RequestAddMedicationCommand}"
-                          Content="+ Add New Medication"
                           CornerRadius="6"
-                          FontWeight="SemiBold" />
+                          FontWeight="SemiBold">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="Plus" />
+                        <TextBlock VerticalAlignment="Center" Text="Add New Medication" />
+                    </StackPanel>
+                </Button>
                 <Button
                           Grid.Column="1"
                           Padding="16,8"
                           Command="{Binding CloseCommand}"
-                          Content="Done"
-                          CornerRadius="6" />
+                          CornerRadius="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="Check" />
+                        <TextBlock VerticalAlignment="Center" Text="Done" />
+                    </StackPanel>
+                </Button>
             </Grid>
         </Grid>
     </ScrollViewer>

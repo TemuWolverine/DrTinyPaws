@@ -3,6 +3,7 @@
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:vm="using:DrTinyPaws.ViewModels"
           d:DesignHeight="700"
@@ -114,24 +115,36 @@
                           Margin="0,0,8,0"
                           Padding="16,8"
                           Command="{Binding CancelCommand}"
-                          Content="Cancel"
-                          CornerRadius="6" />
+                          CornerRadius="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="Close" />
+                        <TextBlock VerticalAlignment="Center" Text="Cancel" />
+                    </StackPanel>
+                </Button>
                 <Button
                           Grid.Column="2"
                           Padding="16,8"
                           Command="{Binding SaveCommand}"
-                          Content="Save Medication"
                           CornerRadius="6"
                           FontWeight="Bold"
-                          IsVisible="{Binding !IsEditing}" />
+                          IsVisible="{Binding !IsEditing}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="ContentSaveOutline" />
+                        <TextBlock VerticalAlignment="Center" Text="Save Medication" />
+                    </StackPanel>
+                </Button>
                 <Button
                           Grid.Column="2"
                           Padding="16,8"
                           Command="{Binding SaveCommand}"
-                          Content="Update Medication"
                           CornerRadius="6"
                           FontWeight="Bold"
-                          IsVisible="{Binding IsEditing}" />
+                          IsVisible="{Binding IsEditing}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="ContentSaveOutline" />
+                        <TextBlock VerticalAlignment="Center" Text="Update Medication" />
+                    </StackPanel>
+                </Button>
             </Grid>
         </StackPanel>
     </ScrollViewer>

@@ -4,6 +4,7 @@
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
           xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+          xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:vm="using:DrTinyPaws.ViewModels"
           d:DesignHeight="220"
@@ -13,6 +14,8 @@
 
     <Border
               Padding="12,10,12,8"
+              Background="{DynamicResource MaterialPaperBrush}"
+              BorderBrush="{DynamicResource MaterialDividerBrush}"
               BorderThickness="1"
               CornerRadius="8">
         <Grid RowDefinitions="Auto,*">
@@ -21,37 +24,22 @@
                       Grid.Row="0"
                       Margin="0,0,0,6"
                       ColumnDefinitions="Auto,*,Auto">
-                <!--  Navigation Buttons  -->
-                <StackPanel
+                <Button
                           Grid.Column="0"
-                          VerticalAlignment="Center"
-                          Orientation="Horizontal"
-                          Spacing="6">
-                    <Button
-                              Padding="8,4"
-                              Command="{Binding PreviousWeekCommand}"
-                              FontSize="{StaticResource NormalTextFontSize}"
-                              FontWeight="SemiBold"
-                              ToolTip.Tip="Previous Week">
-                        ◀ Prev
-                    </Button>
-                    <Button
-                              Padding="8,4"
-                              Command="{Binding NextWeekCommand}"
-                              FontSize="{StaticResource NormalTextFontSize}"
-                              FontWeight="SemiBold"
-                              ToolTip.Tip="Next Week">
-                        Next ▶
-                    </Button>
-                    <Button
-                              Padding="8,4"
-                              Command="{Binding CurrentWeekCommand}"
-                              FontSize="{StaticResource NormalTextFontSize}"
-                              ToolTip.Tip="Go to Current Week">
-                        Today
-                    </Button>
-                </StackPanel>
-
+                          Padding="8,4"
+                          Command="{Binding PreviousWeekCommand}"
+                          FontSize="{StaticResource NormalTextFontSize}"
+                          FontWeight="SemiBold"
+                          ToolTip.Tip="Previous Week">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <materialIcons:MaterialIcon
+                                  Width="16"
+                                  Height="16"
+                                  VerticalAlignment="Center"
+                                  Kind="ChevronLeft" />
+                        <TextBlock VerticalAlignment="Center" Text="Prev" />
+                    </StackPanel>
+                </Button>
                 <!--  Current Week Range Label  -->
                 <StackPanel
                           Grid.Column="1"
@@ -69,6 +57,23 @@
                               FontWeight="Bold"
                               Text="{Binding WeekLabel}" />
                 </StackPanel>
+
+                <Button
+                          Grid.Column="2"
+                          Padding="8,4"
+                          Command="{Binding NextWeekCommand}"
+                          FontSize="{StaticResource NormalTextFontSize}"
+                          FontWeight="SemiBold"
+                          ToolTip.Tip="Next Week">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock VerticalAlignment="Center" Text="Next" />
+                        <materialIcons:MaterialIcon
+                                  Width="16"
+                                  Height="16"
+                                  VerticalAlignment="Center"
+                                  Kind="ChevronRight" />
+                    </StackPanel>
+                </Button>
             </Grid>
 
             <!--  7-Day Stacked Column Chart  -->

@@ -3,6 +3,7 @@
           xmlns="https://github.com/avaloniaui"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:vm="using:DrTinyPaws.ViewModels"
           d:DesignHeight="650"
@@ -36,15 +37,20 @@
                     <Button
                               Grid.Column="1"
                               Padding="10,6"
-                              BorderThickness="1"
                               Command="{Binding BrowseDatabasePathCommand}"
-                              Content="Browse"
-                              CornerRadius="6" />
+                              CornerRadius="6">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="FolderOpenOutline" />
+                            <TextBlock VerticalAlignment="Center" Text="Browse" />
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </StackPanel>
 
             <Border
                       Padding="12"
+                      Background="{DynamicResource MaterialPaperBrush}"
+                      BorderBrush="{DynamicResource MaterialDividerBrush}"
                       BorderThickness="1"
                       CornerRadius="6">
                 <StackPanel Spacing="10">
@@ -60,6 +66,8 @@
             <!--  Import from Pill Logger  -->
             <Border
                       Padding="14"
+                      Background="{DynamicResource MaterialPaperBrush}"
+                      BorderBrush="{DynamicResource MaterialDividerBrush}"
                       BorderThickness="1"
                       CornerRadius="6">
                 <StackPanel Spacing="10">
@@ -76,10 +84,14 @@
                                   Grid.Column="0"
                                   Padding="14,8"
                                   Command="{Binding ImportPillLoggerCommand}"
-                                  Content="Import Pill Logger DB..."
                                   CornerRadius="6"
                                   FontWeight="Bold"
-                                  IsEnabled="{Binding !IsImporting}" />
+                                  IsEnabled="{Binding !IsImporting}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="DatabaseImportOutline" />
+                                <TextBlock VerticalAlignment="Center" Text="Import Pill Logger DB..." />
+                            </StackPanel>
+                        </Button>
                         <ProgressBar
                                   Grid.Column="1"
                                   Margin="16,0,0,0"
@@ -105,24 +117,35 @@
                 <Button
                           Grid.Column="0"
                           Padding="10,6"
-                          BorderThickness="1"
                           Command="{Binding ResetToDefaultPathCommand}"
-                          Content="Reset to Default Path"
-                          CornerRadius="6" />
+                          CornerRadius="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="Restore" />
+                        <TextBlock VerticalAlignment="Center" Text="Reset to Default Path" />
+                    </StackPanel>
+                </Button>
                 <Button
                           Grid.Column="1"
                           Margin="0,0,8,0"
                           Padding="14,8"
                           Command="{Binding CancelCommand}"
-                          Content="Close"
-                          CornerRadius="6" />
+                          CornerRadius="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="Close" />
+                        <TextBlock VerticalAlignment="Center" Text="Close" />
+                    </StackPanel>
+                </Button>
                 <Button
                           Grid.Column="2"
                           Padding="16,8"
                           Command="{Binding SavePathCommand}"
-                          Content="Save Path"
                           CornerRadius="6"
-                          FontWeight="Bold" />
+                          FontWeight="Bold">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="ContentSaveOutline" />
+                        <TextBlock VerticalAlignment="Center" Text="Save Path" />
+                    </StackPanel>
+                </Button>
             </Grid>
         </StackPanel>
     </ScrollViewer>
