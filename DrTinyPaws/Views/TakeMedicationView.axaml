@@ -15,21 +15,8 @@
 
     <ScrollViewer>
         <Grid Margin="16,12" RowDefinitions="Auto, Auto,Auto,*,Auto,Auto">
-            <!--  Header  -->
-            <Grid
-                      Grid.Row="0"
-                      Margin="0,0,0,14"
-                      ColumnDefinitions="Auto,*,Auto">
-                <TextBlock
-                          Grid.Column="1"
-                          VerticalAlignment="Center"
-                          FontSize="{StaticResource HeaderFontSize}"
-                          FontWeight="Bold"
-                          Text="Record Medication Intake" />
-            </Grid>
-
             <!--  Date/time  -->
-            <Grid Grid.Row="1" ColumnDefinitions="*,*">
+            <Grid Grid.Row="0" ColumnDefinitions="1*,0.5*">
                 <StackPanel Grid.Column="0" Margin="0,0,6,0">
                     <TextBlock
                               Margin="0,0,0,4"
@@ -47,11 +34,12 @@
                 </StackPanel>
             </Grid>
 
+            <TextBlock
+                      Grid.Row="1"
+                      Margin="0,10,0,5"
+                      Text="Choose Medication(s)" />
             <!--  Medication Selection List with Steppers  -->
-            <ScrollViewer
-                      Grid.Row="3"
-                      MaxHeight="320"
-                      Margin="0,0,0,14">
+            <ScrollViewer Grid.Row="3" Margin="0,0,0,14">
                 <ItemsControl ItemsSource="{Binding MedItems}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:TakeMedicationEntryItem">
@@ -96,7 +84,10 @@
                                                   Padding="6,4"
                                                   Command="{Binding DecrementCommand}"
                                                   CornerRadius="4">
-                                            <materialIcons:MaterialIcon Width="14" Height="14" Kind="Minus" />
+                                            <materialIcons:MaterialIcon
+                                                      Width="14"
+                                                      Height="14"
+                                                      Kind="Minus" />
                                         </Button>
                                         <TextBlock
                                                   Width="28"
@@ -108,7 +99,10 @@
                                                   Padding="6,4"
                                                   Command="{Binding IncrementCommand}"
                                                   CornerRadius="4">
-                                            <materialIcons:MaterialIcon Width="14" Height="14" Kind="Plus" />
+                                            <materialIcons:MaterialIcon
+                                                      Width="14"
+                                                      Height="14"
+                                                      Kind="Plus" />
                                         </Button>
                                     </StackPanel>
                                 </Grid>
@@ -133,8 +127,16 @@
                           Classes="flat"
                           Command="{Binding ToggleCreateGroupCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
-                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}" Kind="BookmarkPlusOutline" />
-                        <TextBlock VerticalAlignment="Center" Text="Save this selection as a Group Preset / Shortcut" TextDecorations="Underline" />
+                        <materialIcons:MaterialIcon
+                                  Width="16"
+                                  Height="16"
+                                  VerticalAlignment="Center"
+                                  Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                  Kind="BookmarkPlusOutline" />
+                        <TextBlock
+                                  VerticalAlignment="Center"
+                                  Text="Save this selection as a Group Preset / Shortcut"
+                                  TextDecorations="Underline" />
                     </StackPanel>
                 </Button>
 
@@ -156,7 +158,11 @@
                                   Command="{Binding SaveSelectionAsGroupCommand}"
                                   CornerRadius="4">
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="ContentSaveOutline" />
+                                <materialIcons:MaterialIcon
+                                          Width="16"
+                                          Height="16"
+                                          VerticalAlignment="Center"
+                                          Kind="ContentSaveOutline" />
                                 <TextBlock VerticalAlignment="Center" Text="Save Group Preset" />
                             </StackPanel>
                         </Button>
@@ -179,7 +185,11 @@
                           Command="{Binding CancelCommand}"
                           CornerRadius="6">
                     <StackPanel Orientation="Horizontal" Spacing="6">
-                        <materialIcons:MaterialIcon Width="16" Height="16" VerticalAlignment="Center" Kind="Close" />
+                        <materialIcons:MaterialIcon
+                                  Width="16"
+                                  Height="16"
+                                  VerticalAlignment="Center"
+                                  Kind="Close" />
                         <TextBlock VerticalAlignment="Center" Text="Cancel" />
                     </StackPanel>
                 </Button>
@@ -190,7 +200,11 @@
                           CornerRadius="6"
                           FontWeight="Bold">
                     <StackPanel Orientation="Horizontal" Spacing="6">
-                        <materialIcons:MaterialIcon Width="18" Height="18" VerticalAlignment="Center" Kind="Check" />
+                        <materialIcons:MaterialIcon
+                                  Width="18"
+                                  Height="18"
+                                  VerticalAlignment="Center"
+                                  Kind="Check" />
                         <TextBlock VerticalAlignment="Center" Text="Record Dose" />
                     </StackPanel>
                 </Button>
