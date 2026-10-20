@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
@@ -13,7 +13,28 @@ public class DateTimeFormatConverter : IValueConverter
             var now = DateTime.Now;
             if (dt.Date == now.Date)
             {
-                return $"Today, {dt:hh:mm tt}";
+                var elapsed = now - dt;
+                if (elapsed < TimeSpan.Zero)
+                {
+                    elapsed = TimeSpan.Zero;
+                }
+
+                if (elapsed.TotalMinutes < 1)
+                {
+                    return $"{elapsed.Seconds}s ago";
+                }
+
+                if (elapsed.TotalHours < 1)
+                {
+                    return $"{elapsed.Minutes}m ago";
+                }
+
+                if (elapsed.Minutes == 0)
+                {
+                    return $"{(int)elapsed.TotalHours}h ago";
+                }
+
+                return $"{(int)elapsed.TotalHours}h {elapsed.Minutes}m ago";
             }
             if (dt.Date == now.Date.AddDays(-1))
             {
